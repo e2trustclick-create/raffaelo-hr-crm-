@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react';
 import { Employee, ShiftSchedule, Department, ShiftType, LeaveRequest } from '@/lib/types';
 import { getTodayString, formatAlbanianDateWithDay, ALBANIAN_DAYS_SHORT, ALBANIAN_MONTHS, calculateHoursBetween } from '@/lib/dateUtils';
 import { assignShift, assignShiftForDateRange, bulkAssignShiftForDate } from './actions';
+import { TableScrollHint } from '@/components/TableScrollHint';
 import {
   Calendar,
   Sun,
@@ -500,6 +501,7 @@ export function ShiftsView({ employees: activeEmployees, shifts, leaves }: Shift
               </tbody>
             </table>
           </div>
+          <TableScrollHint />
         </div>
       ) : viewMode === 'monthly' ? (
         <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">

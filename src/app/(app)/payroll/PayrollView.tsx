@@ -8,6 +8,7 @@ import { computeMonthlyPayroll } from '@/lib/payroll';
 import { exportBrandedExcel, exportBrandedPdf } from '@/lib/brandedExport';
 import { usePagination } from '@/lib/usePagination';
 import { Pagination } from '@/components/Pagination';
+import { TableScrollHint } from '@/components/TableScrollHint';
 import { PageLoader } from '@/components/PageLoader';
 import {
   Download,
@@ -270,6 +271,7 @@ export function PayrollView({ employees, leaves }: PayrollViewProps) {
             </tbody>
           </table>
         </div>
+        <TableScrollHint />
         <Pagination currentPage={page} totalItems={totalFilteredPayroll} pageSize={pageSize} onPageChange={setPage} />
       </div>
 

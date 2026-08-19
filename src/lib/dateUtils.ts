@@ -81,7 +81,7 @@ export function calculateHoursBetween(start: string, end: string): number {
 }
 
 export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('sq-AL', {
-    maximumFractionDigits: 0,
-  }).format(Math.round(amount)) + ' Lekë';
+  const rounded = Math.round(amount);
+  const grouped = Math.abs(rounded).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  return (rounded < 0 ? '-' : '') + grouped + ' Lekë';
 }

@@ -6,6 +6,7 @@ import { getCurrentMonthString, formatMonthName, formatAlbanianDate } from '@/li
 import { exportBrandedExcel, exportBrandedPdf } from '@/lib/brandedExport';
 import { usePagination } from '@/lib/usePagination';
 import { Pagination } from '@/components/Pagination';
+import { TableScrollHint } from '@/components/TableScrollHint';
 import {
   Download,
   Calendar,
@@ -185,6 +186,7 @@ export function ReportsView({ employees, attendance, leaves }: ReportsViewProps)
                 </tbody>
               </table>
             </div>
+            <TableScrollHint />
             <Pagination
               currentPage={attendancePagination.page}
               totalItems={attendancePagination.totalItems}
@@ -236,6 +238,7 @@ export function ReportsView({ employees, attendance, leaves }: ReportsViewProps)
               </tbody>
             </table>
           </div>
+          <TableScrollHint />
           <Pagination
             currentPage={employeeHoursPagination.page}
             totalItems={employeeHoursPagination.totalItems}
@@ -340,6 +343,7 @@ export function ReportsView({ employees, attendance, leaves }: ReportsViewProps)
               </tbody>
             </table>
           </div>
+          <TableScrollHint />
           <Pagination
             currentPage={leavesReportPagination.page}
             totalItems={leavesReportPagination.totalItems}

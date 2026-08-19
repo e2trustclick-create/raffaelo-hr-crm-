@@ -6,6 +6,7 @@ import { getTodayString, calculateHoursBetween, ALBANIAN_MONTHS } from '@/lib/da
 import { exportBrandedExcel, exportBrandedPdf } from '@/lib/brandedExport';
 import { usePagination } from '@/lib/usePagination';
 import { Pagination } from '@/components/Pagination';
+import { TableScrollHint } from '@/components/TableScrollHint';
 import {
   Calendar,
   Download,
@@ -412,6 +413,7 @@ export function AttendanceView({ employees: activeEmployees, attendance, shifts 
             </tbody>
           </table>
         </div>
+        <TableScrollHint />
         <Pagination currentPage={page} totalItems={totalTableData} pageSize={pageSize} onPageChange={setPage} />
       </div>
 

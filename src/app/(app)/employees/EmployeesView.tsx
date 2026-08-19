@@ -8,6 +8,7 @@ import { formatCurrency, formatAlbanianDate } from '@/lib/dateUtils';
 import { exportBrandedExcel, exportBrandedPdf } from '@/lib/brandedExport';
 import { usePagination } from '@/lib/usePagination';
 import { Pagination } from '@/components/Pagination';
+import { TableScrollHint } from '@/components/TableScrollHint';
 import { PageLoader } from '@/components/PageLoader';
 import { createDepartment, createEmployee, deleteDepartment, deleteEmployee, renameDepartment, updateEmployee, toggleEmployeeStatus } from './actions';
 import {
@@ -434,6 +435,7 @@ export function EmployeesView({ employees, leaves, annualLeaveQuota, defaultWork
             </tbody>
           </table>
         </div>
+        <TableScrollHint />
         <Pagination currentPage={page} totalItems={totalFilteredEmployees} pageSize={pageSize} onPageChange={setPage} />
       </div>
         </>

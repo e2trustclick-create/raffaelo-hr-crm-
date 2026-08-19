@@ -8,6 +8,7 @@ import { formatAlbanianDate } from '@/lib/dateUtils';
 import { addLeaveRequest, updateLeaveRequest, deleteLeaveRequest } from './actions';
 import { usePagination } from '@/lib/usePagination';
 import { Pagination } from '@/components/Pagination';
+import { TableScrollHint } from '@/components/TableScrollHint';
 import { PageLoader } from '@/components/PageLoader';
 import {
   CalendarDays,
@@ -220,6 +221,7 @@ export function LeavesView({ employees, leaves, initialOpenAdd }: LeavesViewProp
             </tbody>
           </table>
         </div>
+        <TableScrollHint />
         <Pagination currentPage={page} totalItems={totalFilteredLeaves} pageSize={pageSize} onPageChange={setPage} />
       </div>
 
