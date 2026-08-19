@@ -1,16 +1,13 @@
 'use client';
 
-import { useActionState, useRef } from 'react';
-import { Lock, Mail, ArrowRight, ShieldCheck, CheckCircle2, AlertCircle } from 'lucide-react';
+import { useActionState, useRef, useState } from 'react';
+import { Lock, Mail, ArrowRight, ShieldCheck, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { loginAction } from '@/lib/actions/auth-actions';
 
 export default function LoginPage() {
   const [state, formAction, pending] = useActionState(loginAction, undefined);
   const formRef = useRef<HTMLFormElement>(null);
-
-  const handleQuickDemo = () => {
-    formRef.current?.requestSubmit();
-  };
+  const [showPassword, setShowPassword] = useState(false);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-rose-950 to-slate-950 flex flex-col justify-center items-center p-4 relative overflow-hidden">
@@ -64,7 +61,7 @@ export default function LoginPage() {
                   type="email"
                   name="email"
                   required
-                  defaultValue="hr@rafaeloresort.com"
+                  autoComplete="username"
                   placeholder="hr@rafaeloresort.com"
                   className="w-full pl-10 pr-4 py-2.5 bg-slate-900/80 border border-slate-700 rounded-xl text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all"
                 />
@@ -80,13 +77,22 @@ export default function LoginPage() {
                   <Lock className="w-4 h-4" />
                 </div>
                 <input
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   name="password"
                   required
-                  defaultValue="rafaelo2026"
+                  autoComplete="current-password"
                   placeholder="••••••••"
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-900/80 border border-slate-700 rounded-xl text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all"
+                  className="w-full pl-10 pr-11 py-2.5 bg-slate-900/80 border border-slate-700 rounded-xl text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  tabIndex={-1}
+                  aria-label={showPassword ? 'Fshih fjalëkalimin' : 'Shfaq fjalëkalimin'}
+                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-200 transition-colors cursor-pointer"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
               </div>
             </div>
 
@@ -105,20 +111,6 @@ export default function LoginPage() {
               )}
             </button>
           </form>
-
-          <div className="mt-6 pt-5 border-t border-slate-700/60">
-            <button
-              type="button"
-              onClick={handleQuickDemo}
-              className="w-full py-2 px-3 bg-slate-700/50 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl text-xs font-medium border border-slate-600/60 flex items-center justify-center gap-2 transition-all cursor-pointer"
-            >
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Hyrje e Shpejtë Demo (1-Kliko)</span>
-            </button>
-            <p className="text-center text-[11px] text-slate-400 mt-2">
-              Kredencialet: <code className="text-slate-300 font-mono">hr@rafaeloresort.com</code> / <code className="text-slate-300 font-mono">rafaelo2026</code>
-            </p>
-          </div>
         </div>
 
         <p className="text-center text-xs text-slate-400 mt-6">
