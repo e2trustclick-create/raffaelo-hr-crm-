@@ -303,6 +303,7 @@ export function generateInitialShiftsAndAttendance(): {
         shiftType,
         startTime,
         endTime,
+        isExtra: false,
       });
 
       // Attendance records for past & today
