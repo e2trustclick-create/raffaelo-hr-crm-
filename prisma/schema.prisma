@@ -1,0 +1,149 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum EmployeeStatus {
+  AKTIV   @map("Aktiv")
+  JOAKTIV @map("Joaktiv")
+}
+
+enum ShiftType {
+  MENGJES       @map("Mëngjes")
+  PASDITE       @map("Pasdite")
+  NATE          @map("Natë")
+  PUSHIM        @map("Pushim")
+  PERSONALIZUAR @map("E personalizuar")
+}
+
+enum AttendanceStatus {
+  NE_PUNE @map("Në punë")
+  MUNGON  @map("Mungon")
+  ME_LEJE @map("Me leje")
+  PUSHIM  @map("Pushim")
+}
+
+enum LeaveType {
+  VJETORE   @map("Pushime vjetore")
+  MJEKESORE @map("Leje mjekësore")
+  PERSONALE @map("Leje personale")
+  PA_PAGESE @map("Leje pa pagesë")
+}
+
+model Employee {
+  id                  String   @id @default(cuid())
+  firstName           String
+  lastName             String
+  position            String
+  department          String
+  departmentRecord    DepartmentRecord @relation(fields: [department], references: [name], onUpdate: Cascade, onDelete: Restrict)
+  phone               String
+  email               String         @unique
+  startDate           DateTime       @db.Date
+  status              EmployeeStatus @default(AKTIV)
+  monthlySalary       Int
+  workingDaysPerMonth Int            @default(26)
+  avatarColor         String?
+  notes               String?
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+
+  shifts          ShiftSchedule[]
+  attendance      AttendanceRecord[]
+  leaves          LeaveRequest[]
+  payrollPayments PayrollPayment[]
+
+  @@index([department])
+  @@index([status])
+}
+
+model DepartmentRecord {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  employees Employee[]
+}
+
+model ShiftSchedule {
+  id         String    @id @default(cuid())
+  employeeId String
+  employee   Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  date       DateTime  @db.Date
+  shiftType  ShiftType
+  startTime  String
+  endTime    String
+  isExtra    Boolean   @default(false)
+  notes      String?
+
+  @@unique([employeeId, date, startTime])
+  @@index([date])
+  @@index([employeeId, date])
+}
+
+model AttendanceRecord {
+  id           String            @id @default(cuid())
+  employeeId   String
+  employee     Employee          @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  date         DateTime          @db.Date
+  checkInTime  String
+  checkOutTime String
+  totalHours   Float
+  status       AttendanceStatus
+  notes        String?
+
+  @@unique([employeeId, date])
+  @@index([date])
+}
+
+model LeaveRequest {
+  id         String    @id @default(cuid())
+  employeeId String
+  employee   Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  leaveType  LeaveType
+  startDate  DateTime  @db.Date
+  endDate    DateTime  @db.Date
+  totalDays  Int
+  reason     String
+  isPaid     Boolean
+  createdAt  DateTime  @default(now())
+
+  @@index([employeeId])
+  @@index([startDate, endDate])
+}
+
+model HRSettings {
+  id                 String @id @default("singleton")
+  resortName         String
+  resortLocation     String
+  hrEmail            String
+  defaultWorkingDays Int
+  annualLeaveQuota   Int
+  currency           String
+}
+
+model PayrollPayment {
+  id         String   @id @default(cuid())
+  employeeId String
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  month      String
+  paidDate   DateTime @db.Date
+
+  @@unique([employeeId, month])
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+}
