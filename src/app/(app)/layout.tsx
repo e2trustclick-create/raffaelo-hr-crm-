@@ -6,16 +6,13 @@ import { AppShell } from '@/components/AppShell';
 export default async function AppLayout({ children }: { children: ReactNode }) {
   const session = await auth();
 
-  const [activeEmployeesCount, settings] = await Promise.all([
-    prisma.employee.count({ where: { status: 'AKTIV' } }),
-    prisma.hRSettings.findUnique({ where: { id: 'singleton' } }),
-  ]);
+  const activeEmployeesCount = await prisma.employee.count({ where: { status: 'AKTIV' } });
 
   return (
     <AppShell
       activeEmployeesCount={activeEmployeesCount}
       hrUserName={session?.user?.name ?? ''}
-      hrEmail={session?.user?.email ?? settings?.hrEmail ?? ''}
+      hrUsername={session?.user?.username ?? ''}
     >
       {children}
     </AppShell>

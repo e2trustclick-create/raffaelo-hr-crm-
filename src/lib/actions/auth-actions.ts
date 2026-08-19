@@ -10,15 +10,15 @@ export async function signOutAction() {
 export type LoginState = { error: string } | undefined;
 
 export async function loginAction(_prevState: LoginState, formData: FormData): Promise<LoginState> {
-  const email = String(formData.get('email') ?? '');
+  const username = String(formData.get('username') ?? '');
   const password = String(formData.get('password') ?? '');
 
   try {
-    await signIn('credentials', { email, password, redirectTo: '/dashboard' });
+    await signIn('credentials', { username, password, redirectTo: '/dashboard' });
     return undefined;
   } catch (error) {
     if (error instanceof AuthError) {
-      return { error: 'Kredencialet janë të pasakta. Provoni me emailin e HR.' };
+      return { error: 'Kredencialet janë të pasakta. Provoni me përdoruesin e HR.' };
     }
     throw error;
   }

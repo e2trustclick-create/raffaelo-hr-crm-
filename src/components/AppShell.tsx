@@ -3,15 +3,16 @@
 import { useState, type ReactNode } from 'react';
 import { Sidebar } from '@/components/Sidebar';
 import { Header } from '@/components/Header';
+import { Footer } from '@/components/Footer';
 
 interface AppShellProps {
   activeEmployeesCount: number;
   hrUserName: string;
-  hrEmail: string;
+  hrUsername: string;
   children: ReactNode;
 }
 
-export function AppShell({ activeEmployeesCount, hrUserName, hrEmail, children }: AppShellProps) {
+export function AppShell({ activeEmployeesCount, hrUserName, hrUsername, children }: AppShellProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
@@ -19,14 +20,17 @@ export function AppShell({ activeEmployeesCount, hrUserName, hrEmail, children }
       <Sidebar
         activeEmployeesCount={activeEmployeesCount}
         hrUserName={hrUserName}
-        hrEmail={hrEmail}
+        hrUsername={hrUsername}
         isMobileOpen={isSidebarOpen}
         onCloseMobile={() => setIsSidebarOpen(false)}
       />
 
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <Header onToggleSidebar={() => setIsSidebarOpen((open) => !open)} />
-        <main className="flex-1 overflow-y-auto">{children}</main>
+        <main className="flex-1 overflow-y-auto flex flex-col">
+          <div className="flex-1">{children}</div>
+          <Footer />
+        </main>
       </div>
     </div>
   );

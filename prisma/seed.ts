@@ -42,7 +42,7 @@ async function main() {
   await prisma.user.create({
     data: {
       name: 'ARSELA SHTJEFNI',
-      email: 'hr@rafaeloresort.com',
+      username: 'hr',
       passwordHash,
     },
   });

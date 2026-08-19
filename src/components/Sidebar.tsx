@@ -20,7 +20,7 @@ import { signOutAction } from '@/lib/actions/auth-actions';
 interface SidebarProps {
   activeEmployeesCount: number;
   hrUserName: string;
-  hrEmail: string;
+  hrUsername: string;
   isMobileOpen: boolean;
   onCloseMobile: () => void;
 }
@@ -36,7 +36,7 @@ const NAV_ITEMS = [
   { href: '/settings', label: 'Cilësimet', icon: Settings },
 ];
 
-export function Sidebar({ activeEmployeesCount, hrUserName, hrEmail, isMobileOpen, onCloseMobile }: SidebarProps) {
+export function Sidebar({ activeEmployeesCount, hrUserName, hrUsername, isMobileOpen, onCloseMobile }: SidebarProps) {
   const pathname = usePathname();
 
   const sidebarContent = (
@@ -111,7 +111,7 @@ export function Sidebar({ activeEmployeesCount, hrUserName, hrEmail, isMobileOpe
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-xs font-semibold text-white truncate">{hrUserName}</p>
-              <p className="text-[11px] text-slate-400 truncate">{hrEmail}</p>
+              <p className="text-[11px] text-slate-400 truncate">@{hrUsername}</p>
             </div>
           </div>
         </div>
