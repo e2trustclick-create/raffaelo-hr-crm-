@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { Employee, ShiftSchedule, AttendanceStatus, AttendanceRecord } from '@/lib/types';
 import { getTodayString, calculateHoursBetween, ALBANIAN_MONTHS } from '@/lib/dateUtils';
 import { exportBrandedExcel, exportBrandedPdf } from '@/lib/brandedExport';
+import { usePagination } from '@/lib/usePagination';
+import { Pagination } from '@/components/Pagination';
 import {
   Calendar,
   Download,
@@ -92,6 +94,8 @@ export function AttendanceView({ employees: activeEmployees, attendance, shifts 
       if (!record) return selectedStatus === 'Pa regjistruar';
       return record.status === selectedStatus;
     });
+
+  const { page, setPage, pageItems: pagedTableData, totalItems: totalTableData, pageSize } = usePagination(tableData, 20);
 
   const countAtWork = dayRecords.filter((a) => a.status === 'Në punë').length;
   const countOnLeave = dayRecords.filter((a) => a.status === 'Me leje').length;
@@ -348,7 +352,7 @@ export function AttendanceView({ employees: activeEmployees, attendance, shifts 
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {tableData.map(({ emp, record, employeeShifts }) => {
+              {pagedTableData.map(({ emp, record, employeeShifts }) => {
                 const workingShifts = employeeShifts.filter((shift) => shift.shiftType !== 'Pushim');
                 const hasRestDay = employeeShifts.some((shift) => shift.shiftType === 'Pushim');
                 const plannedHours = workingShifts.reduce((total, shift) => total + calculateHoursBetween(shift.startTime, shift.endTime), 0);
@@ -408,6 +412,7 @@ export function AttendanceView({ employees: activeEmployees, attendance, shifts 
             </tbody>
           </table>
         </div>
+        <Pagination currentPage={page} totalItems={totalTableData} pageSize={pageSize} onPageChange={setPage} />
       </div>
 
     </div>

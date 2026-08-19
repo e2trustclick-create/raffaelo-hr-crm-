@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { Employee, AttendanceRecord, LeaveRequest } from '@/lib/types';
 import { getCurrentMonthString, formatMonthName, formatAlbanianDate } from '@/lib/dateUtils';
 import { exportBrandedExcel, exportBrandedPdf } from '@/lib/brandedExport';
+import { usePagination } from '@/lib/usePagination';
+import { Pagination } from '@/components/Pagination';
 import {
   Download,
   Calendar,
@@ -55,6 +57,10 @@ export function ReportsView({ employees, attendance, leaves }: ReportsViewProps)
   });
 
   const totalDeptHoursAll = deptHoursData.reduce((acc, curr) => acc + curr.totalHours, 0);
+
+  const attendancePagination = usePagination(monthAttendance, 15);
+  const employeeHoursPagination = usePagination(employeeHoursData, 20);
+  const leavesReportPagination = usePagination(monthLeaves, 20);
 
   const exportCurrentReport = (format: 'excel' | 'pdf') => {
     const exporter = format === 'pdf' ? exportBrandedPdf : exportBrandedExcel;
@@ -158,7 +164,7 @@ export function ReportsView({ employees, attendance, leaves }: ReportsViewProps)
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {monthAttendance.slice(0, 15).map((a) => {
+                  {attendancePagination.pageItems.map((a) => {
                     const emp = employees.find((e) => e.id === a.employeeId);
                     return (
                       <tr key={a.id} className="hover:bg-slate-50/70">
@@ -179,6 +185,12 @@ export function ReportsView({ employees, attendance, leaves }: ReportsViewProps)
                 </tbody>
               </table>
             </div>
+            <Pagination
+              currentPage={attendancePagination.page}
+              totalItems={attendancePagination.totalItems}
+              pageSize={attendancePagination.pageSize}
+              onPageChange={attendancePagination.setPage}
+            />
           </div>
         </div>
       )}
@@ -201,7 +213,7 @@ export function ReportsView({ employees, attendance, leaves }: ReportsViewProps)
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {employeeHoursData.map((item) => (
+                {employeeHoursPagination.pageItems.map((item) => (
                   <tr key={item.emp.id} className="hover:bg-slate-50/70">
                     <td className="py-3 px-4 font-bold text-slate-900">{item.emp.firstName} {item.emp.lastName}</td>
                     <td className="py-3 px-4 text-slate-600">{item.emp.position} ({item.emp.department})</td>
@@ -224,6 +236,12 @@ export function ReportsView({ employees, attendance, leaves }: ReportsViewProps)
               </tbody>
             </table>
           </div>
+          <Pagination
+            currentPage={employeeHoursPagination.page}
+            totalItems={employeeHoursPagination.totalItems}
+            pageSize={employeeHoursPagination.pageSize}
+            onPageChange={employeeHoursPagination.setPage}
+          />
         </div>
       )}
 
@@ -299,7 +317,7 @@ export function ReportsView({ employees, attendance, leaves }: ReportsViewProps)
                     <td colSpan={6} className="py-8 text-center text-slate-400">Nuk ka leje të regjistruara për këtë muaj.</td>
                   </tr>
                 ) : (
-                  monthLeaves.map((l) => {
+                  leavesReportPagination.pageItems.map((l) => {
                     const emp = employees.find((e) => e.id === l.employeeId);
                     return (
                       <tr key={l.id} className="hover:bg-slate-50/70">
@@ -322,6 +340,12 @@ export function ReportsView({ employees, attendance, leaves }: ReportsViewProps)
               </tbody>
             </table>
           </div>
+          <Pagination
+            currentPage={leavesReportPagination.page}
+            totalItems={leavesReportPagination.totalItems}
+            pageSize={leavesReportPagination.pageSize}
+            onPageChange={leavesReportPagination.setPage}
+          />
         </div>
       )}
     </div>
