@@ -112,7 +112,7 @@ export default function LoginPage() {
         </div>
 
         <p className="text-center text-xs text-slate-400 mt-6">
-          © {new Date().getFullYear()} Rafaelo Resort, Shëngjin • Sistemi i Burimeve Njerëzore
+          © 2026 Rafaelo Resort | HR-CRM | E.Bilani &amp; E.Cela
         </p>
       </div>
     </div>
