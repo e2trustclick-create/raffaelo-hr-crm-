@@ -592,7 +592,6 @@ function EmployeeModal({ title, initialData, defaultWorkingDays, onClose, onSave
   const [startDate, setStartDate] = useState(initialData?.startDate || new Date().toISOString().split('T')[0]);
   const [status, setStatus] = useState<EmployeeStatus>(initialData?.status || 'Aktiv');
   const [monthlySalary, setMonthlySalary] = useState(initialData?.monthlySalary || 80000);
-  const [workingDaysPerMonth, setWorkingDaysPerMonth] = useState(initialData?.workingDaysPerMonth || defaultWorkingDays);
   const [notes, setNotes] = useState(initialData?.notes || '');
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -607,7 +606,7 @@ function EmployeeModal({ title, initialData, defaultWorkingDays, onClose, onSave
       startDate,
       status,
       monthlySalary: Number(monthlySalary),
-      workingDaysPerMonth: Number(workingDaysPerMonth),
+      workingDaysPerMonth: initialData?.workingDaysPerMonth || defaultWorkingDays,
       notes,
     });
   };
@@ -658,7 +657,7 @@ function EmployeeModal({ title, initialData, defaultWorkingDays, onClose, onSave
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block font-semibold text-slate-700 mb-1">Data e Fillimit</label>
               <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500" />
@@ -666,10 +665,6 @@ function EmployeeModal({ title, initialData, defaultWorkingDays, onClose, onSave
             <div>
               <label className="block font-semibold text-slate-700 mb-1">Paga Mujore (Lekë)</label>
               <input type="number" step="1000" value={monthlySalary} onChange={(e) => setMonthlySalary(Number(e.target.value))} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500 font-semibold" />
-            </div>
-            <div>
-              <label className="block font-semibold text-slate-700 mb-1">Ditë Pune në Muaj</label>
-              <input type="number" value={workingDaysPerMonth} onChange={(e) => setWorkingDaysPerMonth(Number(e.target.value))} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500" />
             </div>
           </div>
 
