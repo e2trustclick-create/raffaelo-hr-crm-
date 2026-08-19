@@ -62,7 +62,6 @@ export default function LoginPage() {
                   name="email"
                   required
                   autoComplete="username"
-                  placeholder="hr@rafaeloresort.com"
                   className="w-full pl-10 pr-4 py-2.5 bg-slate-900/80 border border-slate-700 rounded-xl text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all"
                 />
               </div>
@@ -81,7 +80,6 @@ export default function LoginPage() {
                   name="password"
                   required
                   autoComplete="current-password"
-                  placeholder="••••••••"
                   className="w-full pl-10 pr-11 py-2.5 bg-slate-900/80 border border-slate-700 rounded-xl text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all"
                 />
                 <button
