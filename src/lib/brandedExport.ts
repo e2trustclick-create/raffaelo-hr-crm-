@@ -41,11 +41,20 @@ function reportTitle(filename: string) {
   return filename.replace(/_/g, ' ').replace(/^Rafaelo\s+(Resort\s+)?/i, '').trim();
 }
 
+function withRowNumbers(headersInput: string[], rowsInput: ExportCell[][]) {
+  if (headersInput[0] === 'Nr.') return { headers: headersInput, rows: rowsInput };
+  return {
+    headers: ['Nr.', ...headersInput],
+    rows: rowsInput.map((row, index) => [index + 1, ...row]),
+  };
+}
+
 export async function exportBrandedExcel(
   filename: string,
-  headers: string[],
-  rows: ExportCell[][]
+  headersRaw: string[],
+  rowsRaw: ExportCell[][]
 ) {
+  const { headers, rows } = withRowNumbers(headersRaw, rowsRaw);
   const workbook = new ExcelJS.Workbook();
   workbook.creator = 'Rafaelo Resort HR - ARSELA SHTJEFNI';
   workbook.created = new Date();
@@ -95,23 +104,25 @@ export async function exportBrandedExcel(
   rows.forEach((row, index) => {
     const excelRow = sheet.addRow(row);
     excelRow.height = 23;
-    excelRow.eachCell((cell) => {
+    excelRow.eachCell((cell, colNumber) => {
       cell.fill = {
         type: 'pattern',
         pattern: 'solid',
         fgColor: { argb: index % 2 === 0 ? BRAND.cream : BRAND.white },
       };
       cell.font = { size: 9, color: { argb: BRAND.text } };
-      cell.alignment = { vertical: 'middle', wrapText: true };
+      cell.alignment = colNumber === 1
+        ? { vertical: 'middle', horizontal: 'center', wrapText: true }
+        : { vertical: 'middle', wrapText: true };
       cell.border = { bottom: { style: 'hair', color: { argb: 'D8CBC3' } } };
-      if (typeof cell.value === 'number') cell.numFmt = '#,##0.00';
+      if (colNumber !== 1 && typeof cell.value === 'number') cell.numFmt = '#,##0.00';
     });
   });
 
   headers.forEach((header, index) => {
     const values = rows.map((row) => String(row[index] ?? ''));
     const longest = Math.max(header.length, ...values.map((value) => value.length));
-    sheet.getColumn(index + 1).width = Math.min(34, Math.max(12, longest + 2));
+    sheet.getColumn(index + 1).width = index === 0 ? 6 : Math.min(34, Math.max(12, longest + 2));
   });
   sheet.autoFilter = { from: { row: 5, column: 1 }, to: { row: 5 + rows.length, column: headers.length } };
   sheet.headerFooter.oddFooter = '&LRAFAELO RESORT - HR&CKonfidenciale&RPage &P / &N';
@@ -125,9 +136,10 @@ export async function exportBrandedExcel(
 
 export async function exportBrandedPdf(
   filename: string,
-  headers: string[],
-  rows: ExportCell[][]
+  headersRaw: string[],
+  rowsRaw: ExportCell[][]
 ) {
+  const { headers, rows } = withRowNumbers(headersRaw, rowsRaw);
   const landscape = headers.length > 6;
   const doc = new jsPDF({ orientation: landscape ? 'landscape' : 'portrait', unit: 'mm', format: 'a4' });
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -154,6 +166,7 @@ export async function exportBrandedPdf(
     theme: 'grid',
     styles: { font: 'helvetica', fontSize: headers.length > 6 ? 6.5 : 8, cellPadding: 2, textColor: [48, 43, 43], lineColor: [220, 208, 196], lineWidth: 0.15 },
     headStyles: { fillColor: [134, 24, 35], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', lineColor: [222, 182, 87], lineWidth: 0.35 },
+    columnStyles: { 0: { cellWidth: 10, halign: 'center' } },
     alternateRowStyles: { fillColor: [255, 250, 240] },
     margin: { top: 37, right: 10, bottom: 14, left: 10 },
     didDrawPage: () => {
