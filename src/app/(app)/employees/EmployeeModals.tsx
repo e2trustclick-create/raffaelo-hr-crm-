@@ -75,6 +75,7 @@ interface EmployeeModalProps {
 export function EmployeeModal({ title, initialData, defaultWorkingDays, onClose, onSave, departments }: EmployeeModalProps) {
   const [firstName, setFirstName] = useState(initialData?.firstName || '');
   const [lastName, setLastName] = useState(initialData?.lastName || '');
+  const [nid, setNid] = useState(initialData?.nid || '');
   const [position, setPosition] = useState(initialData?.position || '');
   const [department, setDepartment] = useState<Department>(initialData?.department || departments[0] || '');
   const [phone, setPhone] = useState(initialData?.phone || '+355 6');
@@ -89,6 +90,7 @@ export function EmployeeModal({ title, initialData, defaultWorkingDays, onClose,
     onSave({
       firstName,
       lastName,
+      nid: nid.trim() || undefined,
       position,
       department,
       phone,
@@ -119,6 +121,11 @@ export function EmployeeModal({ title, initialData, defaultWorkingDays, onClose,
               <label className="block font-semibold text-slate-700 mb-1">Mbiemri *</label>
               <input type="text" required value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="p.sh. Hoxha" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500 focus:bg-white" />
             </div>
+          </div>
+
+          <div>
+            <label className="block font-semibold text-slate-700 mb-1">NID (Karta e Identitetit)</label>
+            <input type="text" value={nid} onChange={(e) => setNid(e.target.value)} placeholder="p.sh. I12345678A" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500 focus:bg-white" />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
@@ -267,6 +274,7 @@ export function EmployeeProfileModal({
                 <p><strong>Telefoni:</strong> {employee.phone}</p>
                 <p><strong>Email:</strong> {employee.email}</p>
                 <p><strong>Departamenti:</strong> {employee.department}</p>
+                <p><strong>NID:</strong> {employee.nid || '—'}</p>
               </div>
             </div>
 

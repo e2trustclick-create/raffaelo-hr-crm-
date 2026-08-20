@@ -32,6 +32,7 @@ export interface Employee {
   id: string;
   firstName: string;
   lastName: string;
+  nid?: string; // Numri i Kartës së Identitetit
   position: string;
   department: Department;
   phone: string;

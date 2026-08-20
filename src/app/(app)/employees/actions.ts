@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { prisma } from '@/lib/prisma';
+import { PrismaClientKnownRequestError } from '@/generated/prisma/internal/prismaNamespace';
 import { requireAuth, requireAdmin } from '@/lib/actions/require-auth';
 import { logAudit } from '@/lib/actions/audit';
 import { EMPLOYEE_STATUS_TO_DB } from '@/lib/enumMaps';
@@ -14,6 +15,7 @@ function toEmployeeData(data: Omit<Employee, 'id'>) {
   return {
     firstName: parsed.firstName,
     lastName: parsed.lastName,
+    nid: parsed.nid?.trim() || null,
     position: parsed.position,
     department: parsed.department,
     phone: parsed.phone,
@@ -27,9 +29,24 @@ function toEmployeeData(data: Omit<Employee, 'id'>) {
   };
 }
 
+function rethrowFriendlyUniqueError(error: unknown): never {
+  if (error instanceof PrismaClientKnownRequestError && error.code === 'P2002') {
+    const target = (error.meta?.target as string[] | undefined) ?? [];
+    if (target.includes('nid')) throw new Error('Ky NID (karta e identitetit) është përdorur tashmë nga një punonjës tjetër.');
+    if (target.includes('email')) throw new Error('Ky email është përdorur tashmë nga një punonjës tjetër.');
+    throw new Error('Të dhëna të përsëritura.');
+  }
+  throw error;
+}
+
 export async function createEmployee(data: Omit<Employee, 'id'>) {
   const session = await requireAuth();
-  const created = await prisma.employee.create({ data: toEmployeeData(data) });
+  let created;
+  try {
+    created = await prisma.employee.create({ data: toEmployeeData(data) });
+  } catch (error) {
+    rethrowFriendlyUniqueError(error);
+  }
   await logAudit(session, 'CREATE', 'Employee', created.id, `${created.firstName} ${created.lastName}`);
   revalidatePath('/employees');
   revalidatePath('/dashboard');
@@ -38,7 +55,12 @@ export async function createEmployee(data: Omit<Employee, 'id'>) {
 export async function updateEmployee(id: string, data: Omit<Employee, 'id'>) {
   const session = await requireAuth();
   const before = await prisma.employee.findUnique({ where: { id } });
-  const updated = await prisma.employee.update({ where: { id }, data: toEmployeeData(data) });
+  let updated;
+  try {
+    updated = await prisma.employee.update({ where: { id }, data: toEmployeeData(data) });
+  } catch (error) {
+    rethrowFriendlyUniqueError(error);
+  }
   const salaryChanged = before && before.monthlySalary !== updated.monthlySalary;
   await logAudit(
     session,

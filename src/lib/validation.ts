@@ -5,6 +5,7 @@ const dateOnly = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Data duhet të jetë n
 export const employeeInputSchema = z.object({
   firstName: z.string().trim().min(1, 'Emri kërkohet').max(80),
   lastName: z.string().trim().min(1, 'Mbiemri kërkohet').max(80),
+  nid: z.string().trim().max(20, 'NID shumë i gjatë').optional().nullable(),
   position: z.string().trim().min(1, 'Pozicioni kërkohet').max(100),
   department: z.string().trim().min(1, 'Departamenti kërkohet').max(100),
   phone: z.string().trim().min(5, 'Telefoni është shumë i shkurtër').max(30),

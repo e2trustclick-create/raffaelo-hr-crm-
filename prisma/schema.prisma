@@ -48,6 +48,7 @@ model Employee {
   id                  String   @id @default(cuid())
   firstName           String
   lastName             String
+  nid                 String?  @unique
   position            String
   department          String
   departmentRecord    DepartmentRecord @relation(fields: [department], references: [name], onUpdate: Cascade, onDelete: Restrict)

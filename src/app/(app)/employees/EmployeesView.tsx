@@ -68,7 +68,8 @@ export function EmployeesView({ employees, leaves, annualLeaveQuota, defaultWork
       `${emp.firstName} ${emp.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
       emp.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       emp.phone.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      emp.position.toLowerCase().includes(searchTerm.toLowerCase());
+      emp.position.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (emp.nid ?? '').toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesDept = selectedDept === null || emp.department === selectedDept;
     const matchesStatus = selectedStatus === 'Të gjithë' || emp.status === selectedStatus;
@@ -94,7 +95,7 @@ export function EmployeesView({ employees, leaves, annualLeaveQuota, defaultWork
 
     return employees.some((employee) =>
       employee.department === department &&
-      `${employee.firstName} ${employee.lastName} ${employee.position} ${employee.email} ${employee.phone}`
+      `${employee.firstName} ${employee.lastName} ${employee.position} ${employee.email} ${employee.phone} ${employee.nid ?? ''}`
         .toLocaleLowerCase('sq')
         .includes(normalizedDepartmentSearch)
     );
@@ -102,7 +103,7 @@ export function EmployeesView({ employees, leaves, annualLeaveQuota, defaultWork
   const suggestedEmployees = normalizedDepartmentSearch
     ? employees
         .filter((employee) =>
-          `${employee.firstName} ${employee.lastName} ${employee.position} ${employee.department} ${employee.email} ${employee.phone}`
+          `${employee.firstName} ${employee.lastName} ${employee.position} ${employee.department} ${employee.email} ${employee.phone} ${employee.nid ?? ''}`
             .toLocaleLowerCase('sq')
             .includes(normalizedDepartmentSearch)
         )
@@ -128,11 +129,11 @@ export function EmployeesView({ employees, leaves, annualLeaveQuota, defaultWork
     const scopeLabel = selectedDept || 'Të Gjitha Departamentet';
     const safeScopeLabel = scopeLabel.replace(/[^a-zA-Z0-9À-ž]+/g, '_').replace(/^_|_$/g, '');
     const headers = [
-      'Nr.', 'Emri', 'Mbiemri', 'Pozicioni', 'Departamenti', 'Telefoni', 'Email',
+      'Nr.', 'Emri', 'Mbiemri', 'NID', 'Pozicioni', 'Departamenti', 'Telefoni', 'Email',
       'Data Fillimit', 'Statusi', 'Paga Mujore (Lekë)', 'Ditë Pune',
     ];
     const rows = exportScope.map((e, index) => [
-      index + 1, e.firstName, e.lastName, e.position, e.department, e.phone, e.email,
+      index + 1, e.firstName, e.lastName, e.nid || '', e.position, e.department, e.phone, e.email,
       e.startDate, e.status, e.monthlySalary, e.workingDaysPerMonth,
     ]);
     const exporter = format === 'pdf' ? exportBrandedPdf : exportBrandedExcel;

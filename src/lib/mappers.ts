@@ -18,6 +18,7 @@ export function toClientEmployee(row: DbEmployee): Employee {
     id: row.id,
     firstName: row.firstName,
     lastName: row.lastName,
+    nid: row.nid ?? undefined,
     position: row.position,
     department: row.department,
     phone: row.phone,
