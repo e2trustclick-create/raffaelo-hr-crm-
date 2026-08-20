@@ -167,11 +167,7 @@ export function PayrollView({ employees, leaves, shifts, departments: allDepartm
 
       <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
         <div className="p-4 bg-slate-50/90 border-b border-slate-200 space-y-3">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-            <div>
-              <h3 className="font-bold text-slate-900 text-sm">Përmbledhja Mujore e Pagave ({formatMonthName(selectedMonth)})</h3>
-              <p className="text-xs text-slate-500">Detajet e pagës mujore, ditëve të punuara, lejeve pa pagesë dhe shumës përfundimtare</p>
-            </div>
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-end gap-3">
             <div className="flex items-center gap-2 flex-wrap">
               <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-xl border border-slate-200 shadow-xs">
                 <Calendar className="w-4 h-4 text-rose-600" />

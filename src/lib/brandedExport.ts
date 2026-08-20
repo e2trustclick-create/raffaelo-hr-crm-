@@ -49,6 +49,26 @@ function withRowNumbers(headersInput: string[], rowsInput: ExportCell[][]) {
   };
 }
 
+function buildTotalsRow(headers: string[], rows: ExportCell[][]): ExportCell[] | null {
+  if (rows.length === 0) return null;
+
+  const totals: ExportCell[] = headers.map((_, colIndex) => {
+    if (colIndex === 0 && headers[0] === 'Nr.') return '';
+    const allNumeric = rows.every((row) => typeof row[colIndex] === 'number');
+    if (!allNumeric) return '';
+    const sum = rows.reduce((acc, row) => acc + (row[colIndex] as number), 0);
+    return Math.round(sum * 100) / 100;
+  });
+
+  const hasAnySum = totals.some((value) => typeof value === 'number');
+  if (!hasAnySum) return null;
+
+  const labelIndex = totals.findIndex((value) => value === '');
+  if (labelIndex !== -1) totals[labelIndex] = 'TOTALI';
+
+  return totals;
+}
+
 export async function exportBrandedExcel(
   filename: string,
   headersRaw: string[],
@@ -119,8 +139,24 @@ export async function exportBrandedExcel(
     });
   });
 
+  const totals = buildTotalsRow(headers, rows);
+  if (totals) {
+    const totalsRow = sheet.addRow(totals);
+    totalsRow.height = 25;
+    totalsRow.eachCell((cell, colNumber) => {
+      cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: BRAND.gold } };
+      cell.font = { bold: true, size: 9.5, color: { argb: BRAND.burgundyDark } };
+      cell.alignment = colNumber === 1
+        ? { vertical: 'middle', horizontal: 'center', wrapText: true }
+        : { vertical: 'middle', wrapText: true };
+      cell.border = { top: { style: 'medium', color: { argb: BRAND.burgundy } } };
+      if (typeof cell.value === 'number') cell.numFmt = '#,##0.00';
+    });
+  }
+
+  const widthSourceRows = totals ? [...rows, totals] : rows;
   headers.forEach((header, index) => {
-    const values = rows.map((row) => String(row[index] ?? ''));
+    const values = widthSourceRows.map((row) => String(row[index] ?? ''));
     const longest = Math.max(header.length, ...values.map((value) => value.length));
     sheet.getColumn(index + 1).width = index === 0 ? 6 : Math.min(34, Math.max(12, longest + 2));
   });
@@ -159,13 +195,17 @@ export async function exportBrandedPdf(
   doc.setFontSize(7.5);
   doc.text(`Gjeneruar: ${new Date().toLocaleString('sq-AL')} | ARSELA SHTJEFNI`, pageWidth - 10, 25, { align: 'right' });
 
+  const totals = buildTotalsRow(headers, rows);
+
   autoTable(doc, {
     startY: 37,
     head: [headers],
     body: rows.map((row) => row.map((value) => String(value ?? ''))),
+    foot: totals ? [totals.map((value) => String(value ?? ''))] : undefined,
     theme: 'grid',
     styles: { font: 'helvetica', fontSize: headers.length > 6 ? 6.5 : 8, cellPadding: 2, textColor: [48, 43, 43], lineColor: [220, 208, 196], lineWidth: 0.15 },
     headStyles: { fillColor: [134, 24, 35], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', lineColor: [222, 182, 87], lineWidth: 0.35 },
+    footStyles: { fillColor: [222, 182, 87], textColor: [95, 16, 25], fontStyle: 'bold', lineColor: [134, 24, 35], lineWidth: 0.35 },
     columnStyles: { 0: { cellWidth: 10, halign: 'center' } },
     alternateRowStyles: { fillColor: [255, 250, 240] },
     margin: { top: 37, right: 10, bottom: 14, left: 10 },
