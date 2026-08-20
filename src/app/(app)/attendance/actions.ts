@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { prisma } from '@/lib/prisma';
 import { requireAuth } from '@/lib/actions/require-auth';
+import { attendanceInputSchema } from '@/lib/validation';
 import { ATTENDANCE_STATUS_TO_DB, LEAVE_TYPE_FROM_DB, toDateOnlyString } from '@/lib/enumMaps';
 import { calculateHoursBetween, getTodayString } from '@/lib/dateUtils';
 import { AttendanceStatus, EmployeeStatus, ShiftType } from '@/generated/prisma/enums';
@@ -15,27 +16,28 @@ function nowTimeString(): string {
 
 export async function logAttendance(record: Omit<AttendanceRecord, 'id'>) {
   await requireAuth();
-  const totalHours = record.totalHours || calculateHoursBetween(record.checkInTime, record.checkOutTime);
-  const status = ATTENDANCE_STATUS_TO_DB[record.status];
-  const date = new Date(record.date);
+  const parsed = attendanceInputSchema.parse(record);
+  const totalHours = parsed.totalHours || calculateHoursBetween(parsed.checkInTime, parsed.checkOutTime);
+  const status = ATTENDANCE_STATUS_TO_DB[parsed.status];
+  const date = new Date(parsed.date);
 
   await prisma.attendanceRecord.upsert({
-    where: { employeeId_date: { employeeId: record.employeeId, date } },
+    where: { employeeId_date: { employeeId: parsed.employeeId, date } },
     create: {
-      employeeId: record.employeeId,
+      employeeId: parsed.employeeId,
       date,
-      checkInTime: record.checkInTime,
-      checkOutTime: record.checkOutTime,
-      totalHours: record.status === 'Në punë' ? totalHours : 0,
+      checkInTime: parsed.checkInTime,
+      checkOutTime: parsed.checkOutTime,
+      totalHours: parsed.status === 'Në punë' ? totalHours : 0,
       status,
-      notes: record.notes,
+      notes: parsed.notes,
     },
     update: {
-      checkInTime: record.checkInTime,
-      checkOutTime: record.checkOutTime,
-      totalHours: record.status === 'Në punë' ? totalHours : 0,
+      checkInTime: parsed.checkInTime,
+      checkOutTime: parsed.checkOutTime,
+      totalHours: parsed.status === 'Në punë' ? totalHours : 0,
       status,
-      notes: record.notes,
+      notes: parsed.notes,
     },
   });
 

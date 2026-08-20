@@ -21,6 +21,7 @@ interface SidebarProps {
   activeEmployeesCount: number;
   hrUserName: string;
   hrUsername: string;
+  hrUserRole: 'ADMIN' | 'STAFF';
   isMobileOpen: boolean;
   onCloseMobile: () => void;
 }
@@ -36,7 +37,7 @@ const NAV_ITEMS = [
   { href: '/settings', label: 'Cilësimet', icon: Settings },
 ];
 
-export function Sidebar({ activeEmployeesCount, hrUserName, hrUsername, isMobileOpen, onCloseMobile }: SidebarProps) {
+export function Sidebar({ activeEmployeesCount, hrUserName, hrUsername, hrUserRole, isMobileOpen, onCloseMobile }: SidebarProps) {
   const pathname = usePathname();
 
   const sidebarContent = (
@@ -110,7 +111,12 @@ export function Sidebar({ activeEmployeesCount, hrUserName, hrUsername, isMobile
               AS
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-semibold text-white truncate">{hrUserName}</p>
+              <div className="flex items-center gap-1.5">
+                <p className="text-xs font-semibold text-white truncate">{hrUserName}</p>
+                <span className={`shrink-0 px-1.5 py-0.5 rounded-md text-[9px] font-bold ${hrUserRole === 'ADMIN' ? 'bg-amber-400/20 text-amber-300' : 'bg-white/10 text-slate-300'}`}>
+                  {hrUserRole === 'ADMIN' ? 'Admin' : 'Staf'}
+                </span>
+              </div>
               <p className="text-[11px] text-slate-400 truncate">@{hrUsername}</p>
             </div>
           </div>

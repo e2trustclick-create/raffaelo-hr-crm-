@@ -2,55 +2,71 @@
 
 import { revalidatePath } from 'next/cache';
 import { prisma } from '@/lib/prisma';
-import { requireAuth } from '@/lib/actions/require-auth';
+import { requireAuth, requireAdmin } from '@/lib/actions/require-auth';
+import { logAudit } from '@/lib/actions/audit';
 import { EMPLOYEE_STATUS_TO_DB } from '@/lib/enumMaps';
+import { employeeInputSchema, departmentNameSchema } from '@/lib/validation';
 import type { Employee } from '@/lib/types';
 import { EmployeeStatus } from '@/generated/prisma/enums';
 
 function toEmployeeData(data: Omit<Employee, 'id'>) {
+  const parsed = employeeInputSchema.parse(data);
   return {
-    firstName: data.firstName,
-    lastName: data.lastName,
-    position: data.position,
-    department: data.department,
-    phone: data.phone,
-    email: data.email,
-    startDate: new Date(data.startDate),
-    status: EMPLOYEE_STATUS_TO_DB[data.status] as EmployeeStatus,
-    monthlySalary: data.monthlySalary,
-    workingDaysPerMonth: data.workingDaysPerMonth,
-    avatarColor: data.avatarColor,
-    notes: data.notes,
+    firstName: parsed.firstName,
+    lastName: parsed.lastName,
+    position: parsed.position,
+    department: parsed.department,
+    phone: parsed.phone,
+    email: parsed.email,
+    startDate: new Date(parsed.startDate),
+    status: EMPLOYEE_STATUS_TO_DB[parsed.status] as EmployeeStatus,
+    monthlySalary: parsed.monthlySalary,
+    workingDaysPerMonth: parsed.workingDaysPerMonth,
+    avatarColor: parsed.avatarColor ?? undefined,
+    notes: parsed.notes ?? undefined,
   };
 }
 
 export async function createEmployee(data: Omit<Employee, 'id'>) {
-  await requireAuth();
-  await prisma.employee.create({ data: toEmployeeData(data) });
+  const session = await requireAuth();
+  const created = await prisma.employee.create({ data: toEmployeeData(data) });
+  await logAudit(session, 'CREATE', 'Employee', created.id, `${created.firstName} ${created.lastName}`);
   revalidatePath('/employees');
   revalidatePath('/dashboard');
 }
 
 export async function updateEmployee(id: string, data: Omit<Employee, 'id'>) {
-  await requireAuth();
-  await prisma.employee.update({ where: { id }, data: toEmployeeData(data) });
+  const session = await requireAuth();
+  const before = await prisma.employee.findUnique({ where: { id } });
+  const updated = await prisma.employee.update({ where: { id }, data: toEmployeeData(data) });
+  const salaryChanged = before && before.monthlySalary !== updated.monthlySalary;
+  await logAudit(
+    session,
+    'UPDATE',
+    'Employee',
+    id,
+    salaryChanged
+      ? `${updated.firstName} ${updated.lastName} — paga ndryshoi nga ${before!.monthlySalary} në ${updated.monthlySalary}`
+      : `${updated.firstName} ${updated.lastName}`
+  );
   revalidatePath('/employees');
 }
 
 export async function toggleEmployeeStatus(id: string) {
-  await requireAuth();
+  const session = await requireAuth();
   const emp = await prisma.employee.findUniqueOrThrow({ where: { id } });
-  await prisma.employee.update({
-    where: { id },
-    data: { status: emp.status === EmployeeStatus.AKTIV ? EmployeeStatus.JOAKTIV : EmployeeStatus.AKTIV },
-  });
+  const nextStatus = emp.status === EmployeeStatus.AKTIV ? EmployeeStatus.JOAKTIV : EmployeeStatus.AKTIV;
+  await prisma.employee.update({ where: { id }, data: { status: nextStatus } });
+  await logAudit(session, 'STATUS_CHANGE', 'Employee', id, `${emp.firstName} ${emp.lastName} → ${nextStatus}`);
   revalidatePath('/employees');
   revalidatePath('/dashboard');
 }
 
 export async function deleteEmployee(id: string) {
-  await requireAuth();
+  const session = await requireAdmin();
+  const emp = await prisma.employee.findUniqueOrThrow({ where: { id } });
   await prisma.employee.delete({ where: { id } });
+  await logAudit(session, 'DELETE', 'Employee', id, `${emp.firstName} ${emp.lastName}`);
   revalidatePath('/employees');
   revalidatePath('/dashboard');
   revalidatePath('/shifts');
@@ -61,24 +77,25 @@ export async function deleteEmployee(id: string) {
 }
 
 export async function createDepartment(name: string) {
-  await requireAuth();
-  const normalizedName = name.trim().toUpperCase();
-  if (!normalizedName) return;
+  const session = await requireAdmin();
+  const normalizedName = departmentNameSchema.parse(name).toUpperCase();
   await prisma.departmentRecord.upsert({
     where: { name: normalizedName },
     create: { name: normalizedName },
     update: {},
   });
+  await logAudit(session, 'CREATE', 'Department', normalizedName);
   revalidatePath('/employees');
 }
 
 export async function renameDepartment(id: string, name: string) {
-  await requireAuth();
-  const normalizedName = name.trim().toUpperCase();
-  if (!normalizedName) return;
+  const session = await requireAdmin();
+  const normalizedName = departmentNameSchema.parse(name).toUpperCase();
   const existing = await prisma.departmentRecord.findUnique({ where: { name: normalizedName } });
   if (existing && existing.id !== id) return;
+  const before = await prisma.departmentRecord.findUnique({ where: { id } });
   await prisma.departmentRecord.update({ where: { id }, data: { name: normalizedName } });
+  await logAudit(session, 'RENAME', 'Department', id, `${before?.name} → ${normalizedName}`);
   revalidatePath('/employees');
   revalidatePath('/dashboard');
   revalidatePath('/shifts');
@@ -87,12 +104,13 @@ export async function renameDepartment(id: string, name: string) {
 }
 
 export async function deleteDepartment(id: string) {
-  await requireAuth();
+  const session = await requireAdmin();
   const department = await prisma.departmentRecord.findUniqueOrThrow({
     where: { id },
     include: { _count: { select: { employees: true } } },
   });
   if (department._count.employees > 0) return;
   await prisma.departmentRecord.delete({ where: { id } });
+  await logAudit(session, 'DELETE', 'Department', id, department.name);
   revalidatePath('/employees');
 }

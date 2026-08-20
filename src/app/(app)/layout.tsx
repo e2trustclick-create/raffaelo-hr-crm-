@@ -13,6 +13,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
       activeEmployeesCount={activeEmployeesCount}
       hrUserName={session?.user?.name ?? ''}
       hrUsername={session?.user?.username ?? ''}
+      hrUserRole={session?.user?.role ?? 'STAFF'}
     >
       {children}
     </AppShell>

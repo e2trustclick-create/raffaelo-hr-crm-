@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { prisma } from '@/lib/prisma';
 import { requireAuth } from '@/lib/actions/require-auth';
+import { shiftAssignSchema } from '@/lib/validation';
 import { SHIFT_TYPE_TO_DB } from '@/lib/enumMaps';
 import { EmployeeStatus } from '@/generated/prisma/enums';
 import type { ShiftType } from '@/lib/types';
@@ -17,15 +18,16 @@ async function upsertShift(
   isExtra = false,
   shiftId?: string
 ) {
-  const dateObj = new Date(date);
-  const isRest = shiftType === 'Pushim';
+  const parsed = shiftAssignSchema.parse({ employeeId, date, shiftType, startTime, endTime, notes, isExtra });
+  const dateObj = new Date(parsed.date);
+  const isRest = parsed.shiftType === 'Pushim';
 
   const data = {
-    shiftType: SHIFT_TYPE_TO_DB[shiftType],
-    startTime: isRest ? '' : startTime,
-    endTime: isRest ? '' : endTime,
-    isExtra: isRest ? false : isExtra,
-    notes,
+    shiftType: SHIFT_TYPE_TO_DB[parsed.shiftType],
+    startTime: isRest ? '' : parsed.startTime,
+    endTime: isRest ? '' : parsed.endTime,
+    isExtra: isRest ? false : parsed.isExtra,
+    notes: parsed.notes,
   };
 
   if (shiftId) {
@@ -34,9 +36,9 @@ async function upsertShift(
   }
 
   await prisma.shiftSchedule.upsert({
-    where: { employeeId_date_startTime: { employeeId, date: dateObj, startTime: data.startTime } },
+    where: { employeeId_date_startTime: { employeeId: parsed.employeeId, date: dateObj, startTime: data.startTime } },
     create: {
-      employeeId,
+      employeeId: parsed.employeeId,
       date: dateObj,
       ...data,
     },

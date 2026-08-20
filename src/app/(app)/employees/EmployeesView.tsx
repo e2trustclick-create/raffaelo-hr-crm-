@@ -41,9 +41,10 @@ interface EmployeesViewProps {
   defaultWorkingDays: number;
   initialOpenAdd: boolean;
   departments: { id: string; name: string }[];
+  isAdmin: boolean;
 }
 
-export function EmployeesView({ employees, leaves, annualLeaveQuota, defaultWorkingDays, initialOpenAdd, departments }: EmployeesViewProps) {
+export function EmployeesView({ employees, leaves, annualLeaveQuota, defaultWorkingDays, initialOpenAdd, departments, isAdmin }: EmployeesViewProps) {
   const router = useRouter();
   const [, startTransition] = useTransition();
 
@@ -176,13 +177,15 @@ export function EmployeesView({ employees, leaves, annualLeaveQuota, defaultWork
             <UserPlus className="w-3.5 h-3.5" />
             <span>Shto Punonjës të Ri</span>
           </button>
-          <button
-            onClick={() => setIsDepartmentManagerOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl text-xs font-semibold shadow-xs transition-colors cursor-pointer"
-          >
-            <Settings2 className="w-3.5 h-3.5" />
-            <span>Menaxho Departamentet</span>
-          </button>
+          {isAdmin && (
+            <button
+              onClick={() => setIsDepartmentManagerOpen(true)}
+              className="flex items-center gap-1.5 px-3 py-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl text-xs font-semibold shadow-xs transition-colors cursor-pointer"
+            >
+              <Settings2 className="w-3.5 h-3.5" />
+              <span>Menaxho Departamentet</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -420,13 +423,15 @@ export function EmployeesView({ employees, leaves, annualLeaveQuota, defaultWork
                         >
                           {emp.status === 'Aktiv' ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
                         </button>
-                        <button
-                          onClick={() => setDeletingEmployee(emp)}
-                          className="p-1.5 text-slate-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
-                          title="Fshi përgjithmonë"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        {isAdmin && (
+                          <button
+                            onClick={() => setDeletingEmployee(emp)}
+                            className="p-1.5 text-slate-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                            title="Fshi përgjithmonë"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>

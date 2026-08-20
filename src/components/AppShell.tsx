@@ -9,10 +9,11 @@ interface AppShellProps {
   activeEmployeesCount: number;
   hrUserName: string;
   hrUsername: string;
+  hrUserRole: 'ADMIN' | 'STAFF';
   children: ReactNode;
 }
 
-export function AppShell({ activeEmployeesCount, hrUserName, hrUsername, children }: AppShellProps) {
+export function AppShell({ activeEmployeesCount, hrUserName, hrUsername, hrUserRole, children }: AppShellProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
@@ -21,6 +22,7 @@ export function AppShell({ activeEmployeesCount, hrUserName, hrUsername, childre
         activeEmployeesCount={activeEmployeesCount}
         hrUserName={hrUserName}
         hrUsername={hrUsername}
+        hrUserRole={hrUserRole}
         isMobileOpen={isSidebarOpen}
         onCloseMobile={() => setIsSidebarOpen(false)}
       />

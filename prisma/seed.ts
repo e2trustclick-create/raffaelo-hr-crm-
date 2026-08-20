@@ -44,6 +44,7 @@ async function main() {
       name: 'ARSELA SHTJEFNI',
       username: 'hr',
       passwordHash,
+      role: 'ADMIN',
     },
   });
 
