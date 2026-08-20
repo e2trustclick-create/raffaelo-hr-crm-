@@ -51,7 +51,7 @@ export function PayrollView({ employees, leaves, shifts }: PayrollViewProps) {
     return employee ? matchesEmployeeSearch(employee) : false;
   });
 
-  const { page, setPage, pageItems: pagedPayrollList, totalItems: totalFilteredPayroll, pageSize } = usePagination(filteredPayrollList, 20);
+  const { page, setPage, pageItems: pagedPayrollList, totalItems: totalFilteredPayroll, pageSize } = usePagination(filteredPayrollList, 30);
 
   const monthOptions = Array.from({ length: 6 }, (_, i) => {
     const d = new Date();
@@ -221,19 +221,19 @@ export function PayrollView({ employees, leaves, shifts }: PayrollViewProps) {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
+          <table className="w-full text-left text-[11px]">
             <thead>
-              <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-500 uppercase text-[10px] tracking-wider">
-                <th className="py-3 px-4 font-semibold">Punonjësi</th>
-                <th className="py-3 px-4 font-semibold">Paga Mujore</th>
-                <th className="py-3 px-4 font-semibold text-center">Ditë Muaji</th>
-                <th className="py-3 px-4 font-semibold text-center">Ditë të Punuara</th>
-                <th className="py-3 px-4 font-semibold text-center">Leje pa Pagesë</th>
-                <th className="py-3 px-4 font-semibold text-right">Zbritje</th>
-                <th className="py-3 px-4 font-semibold text-center">Orë Ekstra</th>
-                <th className="py-3 px-4 font-semibold text-right">Bonus</th>
-                <th className="py-3 px-4 font-semibold text-right">Paga Përfundimtare</th>
-                <th className="py-3 px-4 font-semibold text-right">Fletëpagesa</th>
+              <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-500 uppercase text-[9px] tracking-wider">
+                <th className="py-2 px-3 font-semibold">Punonjësi</th>
+                <th className="py-2 px-3 font-semibold">Paga Mujore</th>
+                <th className="py-2 px-3 font-semibold text-center">Ditë Muaji</th>
+                <th className="py-2 px-3 font-semibold text-center">Ditë të Punuara</th>
+                <th className="py-2 px-3 font-semibold text-center">Leje pa Pagesë</th>
+                <th className="py-2 px-3 font-semibold text-right">Zbritje</th>
+                <th className="py-2 px-3 font-semibold text-center">Orë Ekstra</th>
+                <th className="py-2 px-3 font-semibold text-right">Bonus</th>
+                <th className="py-2 px-3 font-semibold text-right">Paga Përfundimtare</th>
+                <th className="py-2 px-3 font-semibold text-right">Fletëpagesa</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -243,41 +243,41 @@ export function PayrollView({ employees, leaves, shifts }: PayrollViewProps) {
 
                 return (
                   <tr key={p.id} className={`hover:bg-slate-50/70 transition-colors ${isDeducted ? 'bg-amber-50/20' : ''}`}>
-                    <td className="py-3 px-4">
-                      <div className="flex items-center gap-2.5">
-                        <div className={`w-8 h-8 rounded-xl ${emp?.avatarColor || 'bg-rose-600'} text-white flex items-center justify-center font-bold text-xs shrink-0`}>
+                    <td className="py-1.5 px-3">
+                      <div className="flex items-center gap-2">
+                        <div className={`w-6 h-6 rounded-lg ${emp?.avatarColor || 'bg-rose-600'} text-white flex items-center justify-center font-bold text-[10px] shrink-0`}>
                           {emp ? `${emp.firstName[0]}${emp.lastName[0]}` : 'P'}
                         </div>
-                        <div>
-                          <p className="font-bold text-slate-900">{emp ? `${emp.firstName} ${emp.lastName}` : 'Panjohur'}</p>
-                          <p className="text-[11px] text-slate-400">{emp?.position} • <span className="text-rose-600">{emp?.department}</span></p>
+                        <div className="min-w-0">
+                          <p className="font-bold text-slate-900 truncate">{emp ? `${emp.firstName} ${emp.lastName}` : 'Panjohur'}</p>
+                          <p className="text-[10px] text-slate-400 truncate">{emp?.position} • <span className="text-rose-600">{emp?.department}</span></p>
                         </div>
                       </div>
                     </td>
-                    <td className="py-3 px-4 font-bold text-slate-800">{formatCurrency(p.monthlySalary)}</td>
-                    <td className="py-3 px-4 text-center font-semibold text-slate-700">{p.workingDaysStandard}</td>
-                    <td className="py-3 px-4 text-center font-bold text-emerald-700">{p.daysWorked}</td>
-                    <td className="py-3 px-4 text-center">
+                    <td className="py-1.5 px-3 font-bold text-slate-800">{formatCurrency(p.monthlySalary)}</td>
+                    <td className="py-1.5 px-3 text-center font-semibold text-slate-700">{p.workingDaysStandard}</td>
+                    <td className="py-1.5 px-3 text-center font-bold text-emerald-700">{p.daysWorked}</td>
+                    <td className="py-1.5 px-3 text-center">
                       {p.unpaidLeaveDays > 0 ? (
-                        <span className="px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 font-bold text-[11px]">{p.unpaidLeaveDays} ditë</span>
+                        <span className="px-1.5 py-0.5 rounded-full bg-rose-100 text-rose-800 font-bold text-[10px]">{p.unpaidLeaveDays} ditë</span>
                       ) : (
                         <span className="text-slate-400 font-mono">0</span>
                       )}
                     </td>
-                    <td className="py-3 px-4 text-right font-bold text-rose-600">{p.deductions > 0 ? `-${formatCurrency(p.deductions)}` : '0 Lekë'}</td>
-                    <td className="py-3 px-4 text-center">
+                    <td className="py-1.5 px-3 text-right font-bold text-rose-600">{p.deductions > 0 ? `-${formatCurrency(p.deductions)}` : '0 Lekë'}</td>
+                    <td className="py-1.5 px-3 text-center">
                       {p.extraHours > 0 ? (
-                        <span className="px-2 py-0.5 rounded-full bg-sky-100 text-sky-800 font-bold text-[11px]">{p.extraHours} orë</span>
+                        <span className="px-1.5 py-0.5 rounded-full bg-sky-100 text-sky-800 font-bold text-[10px]">{p.extraHours} orë</span>
                       ) : (
                         <span className="text-slate-400 font-mono">0</span>
                       )}
                     </td>
-                    <td className="py-3 px-4 text-right font-bold text-sky-600">{p.bonuses > 0 ? `+${formatCurrency(p.bonuses)}` : '0 Lekë'}</td>
-                    <td className="py-3 px-4 text-right font-extrabold text-sm text-slate-900"><span className="text-rose-700">{formatCurrency(p.finalSalary)}</span></td>
-                    <td className="py-3 px-4 text-right">
+                    <td className="py-1.5 px-3 text-right font-bold text-sky-600">{p.bonuses > 0 ? `+${formatCurrency(p.bonuses)}` : '0 Lekë'}</td>
+                    <td className="py-1.5 px-3 text-right font-extrabold text-xs text-slate-900"><span className="text-rose-700">{formatCurrency(p.finalSalary)}</span></td>
+                    <td className="py-1.5 px-3 text-right">
                       <button
                         onClick={() => { if (emp) setSelectedSlip({ payroll: p, employee: emp }); }}
-                        className="px-2.5 py-1 bg-slate-100 hover:bg-rose-600 hover:text-white text-slate-700 rounded-lg font-semibold text-[11px] transition-colors cursor-pointer inline-flex items-center gap-1"
+                        className="px-2 py-1 bg-slate-100 hover:bg-rose-600 hover:text-white text-slate-700 rounded-lg font-semibold text-[10px] transition-colors cursor-pointer inline-flex items-center gap-1"
                       >
                         <Receipt className="w-3 h-3" />
                         <span>Fletëpagesa</span>
