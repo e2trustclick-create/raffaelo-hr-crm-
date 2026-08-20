@@ -72,12 +72,12 @@ export function Header({ onToggleSidebar }: HeaderProps) {
         </button>
         <div>
           <h1 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+            <span>{current.title}</span>
             {pathname === '/payroll' && (
               <Suspense fallback={null}>
                 <PayrollMonthBadge />
               </Suspense>
             )}
-            <span>{current.title}</span>
           </h1>
           <p className="text-[11px] sm:text-xs text-slate-500 font-normal hidden sm:block">
             {current.subtitle}
