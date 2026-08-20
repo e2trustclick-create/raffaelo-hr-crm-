@@ -17,6 +17,20 @@ body {
   color: white;
 }
 
+/* Mobile browsers (iOS Safari, Android Chrome) apply their own internal
+   spacing to native date/time inputs, which makes them visually wider or
+   narrower than sibling text/select inputs sharing the same classes.
+   Resetting the native appearance forces our own width/padding to be the
+   only source of truth so every input in a form lines up flush. */
+input[type='date'],
+input[type='time'],
+input[type='month'] {
+  -webkit-appearance: none;
+  appearance: none;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
 @media print {
   @page {
     size: A4 portrait;
