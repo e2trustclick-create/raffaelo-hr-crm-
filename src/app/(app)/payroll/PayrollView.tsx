@@ -166,69 +166,67 @@ export function PayrollView({ employees, leaves, shifts, departments: allDepartm
       </div>
 
       <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
-        <div className="p-4 bg-slate-50/90 border-b border-slate-200 space-y-3">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-end gap-3">
-            <div className="flex items-center gap-2 flex-wrap">
-              <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-xl border border-slate-200 shadow-xs">
-                <Calendar className="w-4 h-4 text-rose-600" />
-                <select value={selectedMonth} onChange={(e) => setSelectedMonth(e.target.value)} className="text-xs font-bold text-slate-800 bg-transparent focus:outline-none cursor-pointer">
-                  {monthOptions.map((opt) => (<option key={opt.key} value={opt.key}>{opt.label}</option>))}
-                </select>
+        <div className="p-4 bg-slate-50/90 border-b border-slate-200">
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="relative flex-1 min-w-[220px]">
+              <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 focus-within:border-rose-300 focus-within:ring-2 focus-within:ring-rose-500">
+                <Search className="w-4 h-4 text-slate-400 shrink-0" />
+                <input
+                  value={employeeSearch}
+                  onChange={(event) => { setEmployeeSearch(event.target.value); setSelectedEmployeeId(''); }}
+                  placeholder="Kërko punonjësin..."
+                  className="min-w-0 flex-1 border-0 bg-transparent py-2.5 text-xs outline-none focus:ring-0"
+                />
+                {(employeeSearch || selectedEmployeeId) && (
+                  <button type="button" onClick={() => { setEmployeeSearch(''); setSelectedEmployeeId(''); }} className="text-lg leading-none text-slate-400 hover:text-slate-700 cursor-pointer" aria-label="Pastro kërkimin">×</button>
+                )}
               </div>
-
-              <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-xl border border-slate-200 shadow-xs">
-                <Building2 className="w-4 h-4 text-rose-600" />
-                <select value={selectedDept} onChange={(e) => setSelectedDept(e.target.value)} className="text-xs font-bold text-slate-800 bg-transparent focus:outline-none cursor-pointer">
-                  <option value="Të gjithë">Të gjitha departamentet</option>
-                  {departments.map((d) => (<option key={d} value={d}>{d}</option>))}
-                </select>
-              </div>
-
-              <button onClick={() => exportPayroll('excel')} className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs transition-all cursor-pointer">
-                <Download className="w-4 h-4" />
-                <span>Excel</span>
-              </button>
-              <button onClick={() => exportPayroll('pdf')} className="flex items-center gap-1.5 px-4 py-2 bg-rose-900 hover:bg-rose-800 text-white rounded-xl text-xs font-bold shadow-xs transition-all cursor-pointer">
-                <Download className="w-4 h-4" />
-                <span>PDF</span>
-              </button>
-            </div>
-          </div>
-
-          <div className="relative w-full lg:w-80 lg:ml-auto">
-            <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 focus-within:border-rose-300 focus-within:ring-2 focus-within:ring-rose-500">
-              <Search className="w-4 h-4 text-slate-400 shrink-0" />
-              <input
-                value={employeeSearch}
-                onChange={(event) => { setEmployeeSearch(event.target.value); setSelectedEmployeeId(''); }}
-                placeholder="Kërko punonjësin..."
-                className="min-w-0 flex-1 border-0 bg-transparent py-2.5 text-xs outline-none focus:ring-0"
-              />
-              {(employeeSearch || selectedEmployeeId) && (
-                <button type="button" onClick={() => { setEmployeeSearch(''); setSelectedEmployeeId(''); }} className="text-lg leading-none text-slate-400 hover:text-slate-700 cursor-pointer" aria-label="Pastro kërkimin">×</button>
+              {normalizedEmployeeSearch && !selectedEmployee && (
+                <div className="absolute right-0 left-0 z-20 mt-1 max-h-64 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-xl divide-y divide-slate-100">
+                  {employeeSuggestions.map((employee) => (
+                    <button
+                      key={employee.id}
+                      type="button"
+                      onClick={() => { setSelectedEmployeeId(employee.id); setEmployeeSearch(`${employee.firstName} ${employee.lastName}`); }}
+                      className="w-full px-3 py-2.5 text-left hover:bg-rose-50 transition-colors cursor-pointer flex items-center gap-2.5"
+                    >
+                      <span className={`w-8 h-8 rounded-lg ${employee.avatarColor || 'bg-rose-600'} text-white flex items-center justify-center text-xs font-bold shrink-0`}>
+                        {employee.firstName[0]}{employee.lastName[0]}
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block text-xs font-bold text-slate-900 truncate">{employee.firstName} {employee.lastName}</span>
+                        <span className="block text-[10px] text-slate-500 truncate">{employee.position} • {employee.department}</span>
+                      </span>
+                    </button>
+                  ))}
+                  {employeeSuggestions.length === 0 && <div className="p-4 text-center text-xs text-slate-400">Nuk u gjet asnjë punonjës.</div>}
+                </div>
               )}
             </div>
-            {normalizedEmployeeSearch && !selectedEmployee && (
-              <div className="absolute right-0 left-0 z-20 mt-1 max-h-64 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-xl divide-y divide-slate-100">
-                {employeeSuggestions.map((employee) => (
-                  <button
-                    key={employee.id}
-                    type="button"
-                    onClick={() => { setSelectedEmployeeId(employee.id); setEmployeeSearch(`${employee.firstName} ${employee.lastName}`); }}
-                    className="w-full px-3 py-2.5 text-left hover:bg-rose-50 transition-colors cursor-pointer flex items-center gap-2.5"
-                  >
-                    <span className={`w-8 h-8 rounded-lg ${employee.avatarColor || 'bg-rose-600'} text-white flex items-center justify-center text-xs font-bold shrink-0`}>
-                      {employee.firstName[0]}{employee.lastName[0]}
-                    </span>
-                    <span className="min-w-0">
-                      <span className="block text-xs font-bold text-slate-900 truncate">{employee.firstName} {employee.lastName}</span>
-                      <span className="block text-[10px] text-slate-500 truncate">{employee.position} • {employee.department}</span>
-                    </span>
-                  </button>
-                ))}
-                {employeeSuggestions.length === 0 && <div className="p-4 text-center text-xs text-slate-400">Nuk u gjet asnjë punonjës.</div>}
-              </div>
-            )}
+
+            <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-xl border border-slate-200 shadow-xs">
+              <Calendar className="w-4 h-4 text-rose-600" />
+              <select value={selectedMonth} onChange={(e) => setSelectedMonth(e.target.value)} className="text-xs font-bold text-slate-800 bg-transparent focus:outline-none cursor-pointer">
+                {monthOptions.map((opt) => (<option key={opt.key} value={opt.key}>{opt.label}</option>))}
+              </select>
+            </div>
+
+            <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-xl border border-slate-200 shadow-xs">
+              <Building2 className="w-4 h-4 text-rose-600" />
+              <select value={selectedDept} onChange={(e) => setSelectedDept(e.target.value)} className="text-xs font-bold text-slate-800 bg-transparent focus:outline-none cursor-pointer">
+                <option value="Të gjithë">Të gjitha departamentet</option>
+                {departments.map((d) => (<option key={d} value={d}>{d}</option>))}
+              </select>
+            </div>
+
+            <button onClick={() => exportPayroll('excel')} className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs transition-all cursor-pointer">
+              <Download className="w-4 h-4" />
+              <span>Excel</span>
+            </button>
+            <button onClick={() => exportPayroll('pdf')} className="flex items-center gap-1.5 px-4 py-2 bg-rose-900 hover:bg-rose-800 text-white rounded-xl text-xs font-bold shadow-xs transition-all cursor-pointer">
+              <Download className="w-4 h-4" />
+              <span>PDF</span>
+            </button>
           </div>
         </div>
 
