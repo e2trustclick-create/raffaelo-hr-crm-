@@ -12,7 +12,7 @@ export const INITIAL_SETTINGS: HRSettings = {
   resortLocation: 'Shëngjin, Lezhë, Shqipëri',
   hrEmail: 'hr@rafaeloresort.com',
   defaultWorkingDays: 26,
-  annualLeaveQuota: 24,
+  annualLeaveQuota: 15,
   currency: 'Lekë',
 };
 

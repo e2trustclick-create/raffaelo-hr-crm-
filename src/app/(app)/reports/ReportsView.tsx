@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Employee, AttendanceRecord, LeaveRequest } from '@/lib/types';
-import { getCurrentMonthString, formatMonthName, formatAlbanianDate } from '@/lib/dateUtils';
+import { getCurrentMonthString, formatMonthName, formatAlbanianDate, getDaysInMonth } from '@/lib/dateUtils';
 import { exportBrandedExcel, exportBrandedPdf } from '@/lib/brandedExport';
 import { usePagination } from '@/lib/usePagination';
 import { Pagination } from '@/components/Pagination';
@@ -41,11 +41,13 @@ export function ReportsView({ employees, attendance, leaves, departments: allDep
   const monthAttendance = attendance.filter((a) => a.date.startsWith(selectedMonth));
   const monthLeaves = leaves.filter((l) => l.startDate.startsWith(selectedMonth) || l.endDate.startsWith(selectedMonth));
 
+  const daysInSelectedMonth = getDaysInMonth(selectedMonth);
+
   const employeeHoursData = activeEmployees.map((emp) => {
     const empAtt = monthAttendance.filter((a) => a.employeeId === emp.id && a.status === 'Në punë');
     const totalH = empAtt.reduce((acc, curr) => acc + (curr.totalHours || 0), 0);
     const daysPresent = empAtt.length;
-    const standardExpectedHours = (emp.workingDaysPerMonth || 26) * 8;
+    const standardExpectedHours = daysInSelectedMonth * 8;
     const progressPercent = Math.min(100, Math.round((totalH / (standardExpectedHours || 1)) * 100));
     return { emp, totalH: Number(totalH.toFixed(1)), daysPresent, standardExpectedHours, progressPercent };
   });

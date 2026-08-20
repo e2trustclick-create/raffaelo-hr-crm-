@@ -68,6 +68,12 @@ export function formatMonthName(monthKey: string): string {
   return `${monthName} ${year}`;
 }
 
+/** Numri real i ditëve të muajit (28-31), p.sh. "2026-02" -> 28. Pa argument, muaji aktual. */
+export function getDaysInMonth(monthKey: string = getCurrentMonthString()): number {
+  const [year, month] = monthKey.split('-').map(Number);
+  return new Date(year, month, 0).getDate();
+}
+
 export function calculateHoursBetween(start: string, end: string): number {
   if (!start || !end) return 0;
   const [startH, startM] = start.split(':').map(Number);

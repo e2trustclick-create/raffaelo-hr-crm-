@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Employee, Department, EmployeeStatus, LeaveRequest } from '@/lib/types';
-import { formatCurrency, formatAlbanianDate } from '@/lib/dateUtils';
+import { formatCurrency, formatAlbanianDate, getDaysInMonth } from '@/lib/dateUtils';
 import { getEmployeeLeaveBalance } from '@/lib/leaveBalance';
 import { Edit2, Trash2, Phone, Briefcase, CalendarDays } from 'lucide-react';
 
@@ -209,7 +209,8 @@ export function EmployeeProfileModal({
 }) {
   const leaveBalance = getEmployeeLeaveBalance(leaves, employee.id, annualLeaveQuota);
   const empLeaves = leaves.filter((l) => l.employeeId === employee.id);
-  const dailyRate = Math.round(employee.monthlySalary / (employee.workingDaysPerMonth || 26));
+  const daysInCurrentMonth = getDaysInMonth();
+  const dailyRate = Math.round(employee.monthlySalary / daysInCurrentMonth);
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
@@ -250,8 +251,8 @@ export function EmployeeProfileModal({
             </div>
             <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
               <span className="text-[10px] text-slate-400 font-semibold uppercase">Ditë Pune</span>
-              <p className="text-sm font-bold text-slate-900 mt-0.5">{employee.workingDaysPerMonth} ditë/muaj</p>
-              <span className="text-[10px] text-slate-500">Standard</span>
+              <p className="text-sm font-bold text-slate-900 mt-0.5">{daysInCurrentMonth} ditë/muaj</p>
+              <span className="text-[10px] text-slate-500">Sipas muajit aktual</span>
             </div>
             <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
               <span className="text-[10px] text-slate-400 font-semibold uppercase">Pushime të Mbetura</span>

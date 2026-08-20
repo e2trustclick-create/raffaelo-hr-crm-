@@ -4,7 +4,7 @@ import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { Employee, Department, LeaveRequest } from '@/lib/types';
-import { formatCurrency, formatAlbanianDate } from '@/lib/dateUtils';
+import { formatCurrency, formatAlbanianDate, getDaysInMonth } from '@/lib/dateUtils';
 import { exportBrandedExcel, exportBrandedPdf } from '@/lib/brandedExport';
 import { usePagination } from '@/lib/usePagination';
 import { Pagination } from '@/components/Pagination';
@@ -130,11 +130,12 @@ export function EmployeesView({ employees, leaves, annualLeaveQuota, defaultWork
     const safeScopeLabel = scopeLabel.replace(/[^a-zA-Z0-9À-ž]+/g, '_').replace(/^_|_$/g, '');
     const headers = [
       'Nr.', 'Emri', 'Mbiemri', 'NID', 'Pozicioni', 'Departamenti', 'Telefoni', 'Email',
-      'Data Fillimit', 'Statusi', 'Paga Mujore (Lekë)', 'Ditë Pune',
+      'Data Fillimit', 'Statusi', 'Paga Mujore (Lekë)', 'Ditë Pune (Muaji Aktual)',
     ];
+    const daysInCurrentMonth = getDaysInMonth();
     const rows = exportScope.map((e, index) => [
       index + 1, e.firstName, e.lastName, e.nid || '', e.position, e.department, e.phone, e.email,
-      e.startDate, e.status, e.monthlySalary, e.workingDaysPerMonth,
+      e.startDate, e.status, e.monthlySalary, daysInCurrentMonth,
     ]);
     const exporter = format === 'pdf' ? exportBrandedPdf : exportBrandedExcel;
     void exporter(`Rafaelo_Resort_Punonjesit_${safeScopeLabel}`, headers, rows);

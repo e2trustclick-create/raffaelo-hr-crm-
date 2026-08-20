@@ -1,4 +1,5 @@
 import type { Employee, LeaveRequest, PayrollRecord } from '@/lib/types';
+import { getDaysInMonth } from '@/lib/dateUtils';
 
 // PAYROLL ENGINE - Strictly complies with Rafaelo Resort HR specifications:
 // Pushime vjetore -> Nuk zbriten nga paga
@@ -10,8 +11,7 @@ export function computeMonthlyPayroll(
   leaves: LeaveRequest[],
   monthKey: string
 ): PayrollRecord[] {
-  const [year, month] = monthKey.split('-').map(Number);
-  const daysInMonth = new Date(year, month, 0).getDate();
+  const daysInMonth = getDaysInMonth(monthKey);
 
   return employees.map((emp) => {
     const workingDaysStandard = daysInMonth;
