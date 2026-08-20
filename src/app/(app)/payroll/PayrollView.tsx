@@ -164,8 +164,8 @@ export function PayrollView({ employees, leaves, shifts, departments: allDepartm
 
       <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
         <div className="p-4 bg-slate-50/90 border-b border-slate-200">
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="relative flex-1 min-w-[220px]">
+          <div className="flex flex-col gap-2 lg:flex-row lg:flex-wrap lg:items-center">
+            <div className="relative w-full lg:flex-1 lg:min-w-[220px]">
               <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 focus-within:border-rose-300 focus-within:ring-2 focus-within:ring-rose-500">
                 <Search className="w-4 h-4 text-slate-400 shrink-0" />
                 <input
@@ -201,29 +201,33 @@ export function PayrollView({ employees, leaves, shifts, departments: allDepartm
               )}
             </div>
 
-            <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-xl border border-slate-200 shadow-xs">
-              <Calendar className="w-4 h-4 text-rose-600" />
-              <select value={selectedMonth} onChange={(e) => setSelectedMonth(e.target.value)} className="text-xs font-bold text-slate-800 bg-transparent focus:outline-none cursor-pointer">
-                {monthOptions.map((opt) => (<option key={opt.key} value={opt.key}>{opt.label}</option>))}
-              </select>
+            <div className="grid grid-cols-2 gap-2 lg:contents">
+              <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-xl border border-slate-200 shadow-xs">
+                <Calendar className="w-4 h-4 text-rose-600 shrink-0" />
+                <select value={selectedMonth} onChange={(e) => setSelectedMonth(e.target.value)} className="w-full text-xs font-bold text-slate-800 bg-transparent focus:outline-none cursor-pointer">
+                  {monthOptions.map((opt) => (<option key={opt.key} value={opt.key}>{opt.label}</option>))}
+                </select>
+              </div>
+
+              <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-xl border border-slate-200 shadow-xs">
+                <Building2 className="w-4 h-4 text-rose-600 shrink-0" />
+                <select value={selectedDept} onChange={(e) => setSelectedDept(e.target.value)} className="w-full text-xs font-bold text-slate-800 bg-transparent focus:outline-none cursor-pointer">
+                  <option value="Të gjithë">Të gjitha departamentet</option>
+                  {departments.map((d) => (<option key={d} value={d}>{d}</option>))}
+                </select>
+              </div>
             </div>
 
-            <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-xl border border-slate-200 shadow-xs">
-              <Building2 className="w-4 h-4 text-rose-600" />
-              <select value={selectedDept} onChange={(e) => setSelectedDept(e.target.value)} className="text-xs font-bold text-slate-800 bg-transparent focus:outline-none cursor-pointer">
-                <option value="Të gjithë">Të gjitha departamentet</option>
-                {departments.map((d) => (<option key={d} value={d}>{d}</option>))}
-              </select>
+            <div className="grid grid-cols-2 gap-2 lg:contents">
+              <button onClick={() => exportPayroll('excel')} className="flex items-center justify-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs transition-all cursor-pointer">
+                <Download className="w-4 h-4" />
+                <span>Excel</span>
+              </button>
+              <button onClick={() => exportPayroll('pdf')} className="flex items-center justify-center gap-1.5 px-4 py-2 bg-rose-900 hover:bg-rose-800 text-white rounded-xl text-xs font-bold shadow-xs transition-all cursor-pointer">
+                <Download className="w-4 h-4" />
+                <span>PDF</span>
+              </button>
             </div>
-
-            <button onClick={() => exportPayroll('excel')} className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs transition-all cursor-pointer">
-              <Download className="w-4 h-4" />
-              <span>Excel</span>
-            </button>
-            <button onClick={() => exportPayroll('pdf')} className="flex items-center gap-1.5 px-4 py-2 bg-rose-900 hover:bg-rose-800 text-white rounded-xl text-xs font-bold shadow-xs transition-all cursor-pointer">
-              <Download className="w-4 h-4" />
-              <span>PDF</span>
-            </button>
           </div>
         </div>
 
