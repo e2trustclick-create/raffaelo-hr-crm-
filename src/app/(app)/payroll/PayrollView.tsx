@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
-import { Employee, LeaveRequest, PayrollRecord } from '@/lib/types';
+import { Employee, LeaveRequest, PayrollRecord, ShiftSchedule } from '@/lib/types';
 import { getCurrentMonthString, formatMonthName, formatCurrency } from '@/lib/dateUtils';
 import { computeMonthlyPayroll } from '@/lib/payroll';
 import { exportBrandedExcel, exportBrandedPdf } from '@/lib/brandedExport';
@@ -23,15 +23,16 @@ const PaySlipModal = dynamic(() => import('./PaySlipModal').then((m) => m.PaySli
 interface PayrollViewProps {
   employees: Employee[];
   leaves: LeaveRequest[];
+  shifts: ShiftSchedule[];
 }
 
-export function PayrollView({ employees, leaves }: PayrollViewProps) {
+export function PayrollView({ employees, leaves, shifts }: PayrollViewProps) {
   const [selectedMonth, setSelectedMonth] = useState<string>(() => getCurrentMonthString());
   const [selectedSlip, setSelectedSlip] = useState<{ payroll: PayrollRecord; employee: Employee } | null>(null);
   const [employeeSearch, setEmployeeSearch] = useState('');
   const [selectedEmployeeId, setSelectedEmployeeId] = useState('');
 
-  const payrollList = computeMonthlyPayroll(employees, leaves, selectedMonth);
+  const payrollList = computeMonthlyPayroll(employees, leaves, shifts, selectedMonth);
   const [selectedYear, selectedMonthNumber] = selectedMonth.split('-').map(Number);
   const daysInSelectedMonth = new Date(selectedYear, selectedMonthNumber, 0).getDate();
   const normalizedEmployeeSearch = employeeSearch.trim().toLocaleLowerCase('sq');
@@ -63,14 +64,16 @@ export function PayrollView({ employees, leaves }: PayrollViewProps) {
 
   const totalBaseSalary = payrollList.reduce((acc, curr) => acc + curr.monthlySalary, 0);
   const totalDeductions = payrollList.reduce((acc, curr) => acc + curr.deductions, 0);
+  const totalBonuses = payrollList.reduce((acc, curr) => acc + curr.bonuses, 0);
   const totalFinalPayroll = payrollList.reduce((acc, curr) => acc + curr.finalSalary, 0);
   const employeesWithDeductions = payrollList.filter((p) => p.unpaidLeaveDays > 0).length;
+  const employeesWithExtraHours = payrollList.filter((p) => p.extraHours > 0).length;
 
   const exportPayroll = (format: 'excel' | 'pdf') => {
     const headers = [
       'Nr.', 'Emri & Mbiemri', 'Pozicioni', 'Departamenti', 'Paga Mujore (Lekë)',
       'Ditë Totale të Muajit', 'Ditë të Punuara', 'Leje pa Pagesë (Ditë)', 'Leje me Pagesë (Ditë)',
-      'Zbritje (Lekë)', 'Paga Përfundimtare (Lekë)',
+      'Zbritje (Lekë)', 'Orë Ekstra', 'Bonus Orësh Ekstra (Lekë)', 'Paga Përfundimtare (Lekë)',
     ];
     const rows = filteredPayrollList.map((p, index) => {
       const emp = employees.find((e) => e.id === p.employeeId);
@@ -85,6 +88,8 @@ export function PayrollView({ employees, leaves }: PayrollViewProps) {
         p.unpaidLeaveDays,
         p.paidLeaveDays,
         p.deductions,
+        p.extraHours,
+        p.bonuses,
         p.finalSalary,
       ];
     });
@@ -133,17 +138,18 @@ export function PayrollView({ employees, leaves }: PayrollViewProps) {
                 <p className="flex items-center gap-1.5"><span className="w-1 h-1 rounded-full bg-emerald-400 shrink-0"></span><span><strong>Lejet mjekësore</strong> → Me pagesë</span></p>
                 <p className="flex items-center gap-1.5"><span className="w-1 h-1 rounded-full bg-emerald-400 shrink-0"></span><span><strong>Lejet personale</strong> → Me pagesë</span></p>
                 <p className="flex items-center gap-1.5 text-amber-300"><span className="w-1 h-1 rounded-full bg-amber-400 shrink-0"></span><span><strong>Lejet pa pagesë</strong> → Zbriten</span></p>
+                <p className="flex items-center gap-1.5 text-sky-300 sm:col-span-2"><span className="w-1 h-1 rounded-full bg-sky-400 shrink-0"></span><span><strong>Orët mbi 8 orë/ditë</strong> (nga Orari &amp; Turnet) → Shtohen si bonus, me normën normale orare</span></p>
               </div>
-              <div className="px-2.5 py-2 rounded-lg bg-white/10 border border-white/10 font-mono text-[9px] leading-relaxed">
-                <span className="text-amber-300 font-bold">Formula: </span>
-                <span>Paga ditore = Paga mujore ÷ {daysInSelectedMonth}; Zbritja = Paga ditore × ditët pa pagesë.</span>
+              <div className="px-2.5 py-2 rounded-lg bg-white/10 border border-white/10 font-mono text-[9px] leading-relaxed space-y-0.5">
+                <div><span className="text-amber-300 font-bold">Formula: </span><span>Paga ditore = Paga mujore ÷ {daysInSelectedMonth}; Zbritja = Paga ditore × ditët pa pagesë.</span></div>
+                <div><span className="text-sky-300 font-bold">Bonus: </span><span>Norma orare = Paga ditore ÷ 8; Bonus = Norma orare × orët ekstra (mbi 8 orë/ditë).</span></div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
         <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
           <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Totali i Pagave Bazë</span>
           <div className="text-xl font-extrabold text-slate-900 mt-1">{formatCurrency(totalBaseSalary)}</div>
@@ -153,6 +159,11 @@ export function PayrollView({ employees, leaves }: PayrollViewProps) {
           <span className="text-[11px] font-bold text-amber-800 uppercase tracking-wider">Zbritjet (Leje pa pagesë)</span>
           <div className="text-xl font-extrabold text-rose-600 mt-1">-{formatCurrency(totalDeductions)}</div>
           <p className="text-[11px] text-slate-400 mt-0.5">{employeesWithDeductions} punonjës me zbritje</p>
+        </div>
+        <div className="bg-white p-4 rounded-2xl border border-sky-200 shadow-xs">
+          <span className="text-[11px] font-bold text-sky-800 uppercase tracking-wider">Bonus (Orë Ekstra)</span>
+          <div className="text-xl font-extrabold text-sky-600 mt-1">+{formatCurrency(totalBonuses)}</div>
+          <p className="text-[11px] text-slate-400 mt-0.5">{employeesWithExtraHours} punonjës me orë ekstra</p>
         </div>
         <div className="bg-white p-4 rounded-2xl border border-emerald-200 shadow-xs">
           <span className="text-[11px] font-bold text-emerald-800 uppercase tracking-wider">Totali Neto Përfundimtar</span>
@@ -219,6 +230,8 @@ export function PayrollView({ employees, leaves }: PayrollViewProps) {
                 <th className="py-3 px-4 font-semibold text-center">Ditë të Punuara</th>
                 <th className="py-3 px-4 font-semibold text-center">Leje pa Pagesë</th>
                 <th className="py-3 px-4 font-semibold text-right">Zbritje</th>
+                <th className="py-3 px-4 font-semibold text-center">Orë Ekstra</th>
+                <th className="py-3 px-4 font-semibold text-right">Bonus</th>
                 <th className="py-3 px-4 font-semibold text-right">Paga Përfundimtare</th>
                 <th className="py-3 px-4 font-semibold text-right">Fletëpagesa</th>
               </tr>
@@ -252,6 +265,14 @@ export function PayrollView({ employees, leaves }: PayrollViewProps) {
                       )}
                     </td>
                     <td className="py-3 px-4 text-right font-bold text-rose-600">{p.deductions > 0 ? `-${formatCurrency(p.deductions)}` : '0 Lekë'}</td>
+                    <td className="py-3 px-4 text-center">
+                      {p.extraHours > 0 ? (
+                        <span className="px-2 py-0.5 rounded-full bg-sky-100 text-sky-800 font-bold text-[11px]">{p.extraHours} orë</span>
+                      ) : (
+                        <span className="text-slate-400 font-mono">0</span>
+                      )}
+                    </td>
+                    <td className="py-3 px-4 text-right font-bold text-sky-600">{p.bonuses > 0 ? `+${formatCurrency(p.bonuses)}` : '0 Lekë'}</td>
                     <td className="py-3 px-4 text-right font-extrabold text-sm text-slate-900"><span className="text-rose-700">{formatCurrency(p.finalSalary)}</span></td>
                     <td className="py-3 px-4 text-right">
                       <button
@@ -266,7 +287,7 @@ export function PayrollView({ employees, leaves }: PayrollViewProps) {
                 );
               })}
               {filteredPayrollList.length === 0 && (
-                <tr><td colSpan={8} className="py-10 text-center text-sm text-slate-400">Nuk u gjet asnjë punonjës.</td></tr>
+                <tr><td colSpan={10} className="py-10 text-center text-sm text-slate-400">Nuk u gjet asnjë punonjës.</td></tr>
               )}
             </tbody>
           </table>

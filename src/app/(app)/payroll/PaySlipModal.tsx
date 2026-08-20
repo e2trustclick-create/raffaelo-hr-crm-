@@ -151,6 +151,14 @@ export function PaySlipModal({ payroll, employee, onClose }: { payroll: PayrollR
                 <span className="font-bold">Zbritja Totale (Paga ditore × Ditë leje)</span>
                 <span className="font-bold">-{formatCurrency(payroll.deductions)}</span>
               </div>
+              <div className="p-2.5 flex justify-between bg-sky-50/50 text-sky-900">
+                <span>Orë Ekstra (mbi 8 orë/ditë, Orari &amp; Turnet)</span>
+                <span className="font-bold">{payroll.extraHours} orë</span>
+              </div>
+              <div className="p-2.5 flex justify-between bg-sky-50 text-sky-900">
+                <span className="font-bold">Bonus Total (Norma orare × Orë ekstra)</span>
+                <span className="font-bold">+{formatCurrency(payroll.bonuses)}</span>
+              </div>
             </div>
             <div className="bg-rose-50 p-3.5 border-t-2 border-rose-600 flex justify-between items-center">
               <div>

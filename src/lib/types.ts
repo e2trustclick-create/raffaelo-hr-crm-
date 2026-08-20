@@ -101,7 +101,8 @@ export interface PayrollRecord {
   absentDays: number;
   dailyRate: number; // monthlySalary / workingDaysStandard
   deductions: number; // dailyRate * unpaidLeaveDays + (dailyRate * absentDays)
-  bonuses: number;
+  extraHours: number; // orë pune mbi 8 orë/ditë sipas orarit & turneve
+  bonuses: number; // extraHours * (dailyRate / 8), norma normale
   finalSalary: number; // monthlySalary - deductions + bonuses
 }
 
