@@ -108,11 +108,8 @@ export function PayrollView({ employees, leaves, shifts, departments: allDepartm
   return (
     <div className="p-6 space-y-6 max-w-7xl mx-auto">
       <div>
-        <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-          <span>Pagat e Punonjësve</span>
-          <span className="text-xs px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 font-bold">{formatMonthName(selectedMonth)}</span>
-        </h2>
-        <p className="text-xs text-slate-500">Llogaritja automatike e pagave mujore bazuar në ditët e punës dhe lejet pa pagesë</p>
+        <span className="inline-block text-xs px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 font-bold">{formatMonthName(selectedMonth)}</span>
+        <p className="text-xs text-slate-500 mt-1.5">Llogaritja automatike e pagave mujore bazuar në ditët e punës dhe lejet pa pagesë</p>
       </div>
 
       <div className="bg-gradient-to-r from-rose-900 to-indigo-950 rounded-xl px-4 py-3 text-white shadow-sm border border-rose-800">
