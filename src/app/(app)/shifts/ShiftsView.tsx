@@ -24,6 +24,7 @@ interface ShiftsViewProps {
   employees: Employee[];
   shifts: ShiftSchedule[];
   leaves: LeaveRequest[];
+  departments: string[];
 }
 
 function toLocalDateString(date: Date) {
@@ -33,7 +34,7 @@ function toLocalDateString(date: Date) {
   return `${year}-${month}-${day}`;
 }
 
-export function ShiftsView({ employees: activeEmployees, shifts, leaves }: ShiftsViewProps) {
+export function ShiftsView({ employees: activeEmployees, shifts, leaves, departments: allDepartments }: ShiftsViewProps) {
   const [, startTransition] = useTransition();
 
   const [selectedDate, setSelectedDate] = useState<string>(getTodayString());
@@ -61,7 +62,7 @@ export function ShiftsView({ employees: activeEmployees, shifts, leaves }: Shift
   const [bulkStartTime, setBulkStartTime] = useState('07:00');
   const [bulkEndTime, setBulkEndTime] = useState('15:00');
   const [bulkTargetEndDate, setBulkTargetEndDate] = useState(getTodayString());
-  const departments = Array.from(new Set(activeEmployees.map((employee) => employee.department))).sort((a, b) => a.localeCompare(b, 'sq'));
+  const departments = [...allDepartments].sort((a, b) => a.localeCompare(b, 'sq'));
 
   const normalizedSearch = searchQuery.trim().toLocaleLowerCase('sq');
   const matchesSearch = (employee: Employee) =>

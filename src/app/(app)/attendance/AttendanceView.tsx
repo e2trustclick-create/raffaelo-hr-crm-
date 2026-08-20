@@ -17,9 +17,10 @@ interface AttendanceViewProps {
   employees: Employee[];
   attendance: AttendanceRecord[];
   shifts: ShiftSchedule[];
+  departments: string[];
 }
 
-export function AttendanceView({ employees: activeEmployees, attendance, shifts }: AttendanceViewProps) {
+export function AttendanceView({ employees: activeEmployees, attendance, shifts, departments: allDepartments }: AttendanceViewProps) {
   const [selectedDate, setSelectedDate] = useState<string>(getTodayString());
   const [selectedDept, setSelectedDept] = useState<string>('Të gjithë');
   const [selectedStatus, setSelectedStatus] = useState<string>('Të gjithë');
@@ -47,7 +48,7 @@ export function AttendanceView({ employees: activeEmployees, attendance, shifts 
     setSelectedStatus('Të gjithë');
   };
 
-  const departments = Array.from(new Set(activeEmployees.map((employee) => employee.department))).sort((a, b) => a.localeCompare(b, 'sq'));
+  const departments = [...allDepartments].sort((a, b) => a.localeCompare(b, 'sq'));
 
   const dayRecords = attendance.filter((a) => a.date === selectedDate);
   const normalizedEmployeeSearch = employeeSearch.trim().toLocaleLowerCase('sq');

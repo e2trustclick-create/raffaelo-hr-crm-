@@ -20,9 +20,10 @@ interface ReportsViewProps {
   employees: Employee[];
   attendance: AttendanceRecord[];
   leaves: LeaveRequest[];
+  departments: string[];
 }
 
-export function ReportsView({ employees, attendance, leaves }: ReportsViewProps) {
+export function ReportsView({ employees, attendance, leaves, departments: allDepartments }: ReportsViewProps) {
   const [selectedMonth, setSelectedMonth] = useState<string>(() => getCurrentMonthString());
   const [activeReportTab, setActiveReportTab] = useState<'attendance' | 'employeeHours' | 'deptHours' | 'leaves'>('attendance');
 
@@ -36,7 +37,7 @@ export function ReportsView({ employees, attendance, leaves }: ReportsViewProps)
   });
 
   const activeEmployees = employees.filter((e) => e.status === 'Aktiv');
-  const departments = Array.from(new Set(employees.map((employee) => employee.department))).sort((a, b) => a.localeCompare(b, 'sq'));
+  const departments = [...allDepartments].sort((a, b) => a.localeCompare(b, 'sq'));
   const monthAttendance = attendance.filter((a) => a.date.startsWith(selectedMonth));
   const monthLeaves = leaves.filter((l) => l.startDate.startsWith(selectedMonth) || l.endDate.startsWith(selectedMonth));
 

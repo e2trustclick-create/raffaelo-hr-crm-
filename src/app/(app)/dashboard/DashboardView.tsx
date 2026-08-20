@@ -32,15 +32,16 @@ interface DashboardViewProps {
   attendance: AttendanceRecord[];
   leaves: LeaveRequest[];
   shifts: ShiftSchedule[];
+  departments: string[];
 }
 
-export function DashboardView({ employees, attendance, leaves, shifts }: DashboardViewProps) {
+export function DashboardView({ employees, attendance, leaves, shifts, departments: allDepartments }: DashboardViewProps) {
   const router = useRouter();
   const [, startTransition] = useTransition();
 
   const todayStr = getTodayString();
   const activeEmployees = employees.filter((e) => e.status === 'Aktiv');
-  const departments = Array.from(new Set(employees.map((employee) => employee.department))).sort((a, b) => a.localeCompare(b, 'sq'));
+  const departments = [...allDepartments].sort((a, b) => a.localeCompare(b, 'sq'));
   const totalEmployeesCount = employees.length;
   const activeEmployeesCount = activeEmployees.length;
 
