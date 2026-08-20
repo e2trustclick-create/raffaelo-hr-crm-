@@ -13,6 +13,7 @@ import { PageLoader } from '@/components/PageLoader';
 import {
   Download,
   Calendar,
+  Building2,
   Info,
   Receipt,
   Search,
@@ -24,10 +25,13 @@ interface PayrollViewProps {
   employees: Employee[];
   leaves: LeaveRequest[];
   shifts: ShiftSchedule[];
+  departments: string[];
 }
 
-export function PayrollView({ employees, leaves, shifts }: PayrollViewProps) {
+export function PayrollView({ employees, leaves, shifts, departments: allDepartments }: PayrollViewProps) {
+  const departments = [...allDepartments].sort((a, b) => a.localeCompare(b, 'sq'));
   const [selectedMonth, setSelectedMonth] = useState<string>(() => getCurrentMonthString());
+  const [selectedDept, setSelectedDept] = useState<string>('Të gjithë');
   const [selectedSlip, setSelectedSlip] = useState<{ payroll: PayrollRecord; employee: Employee } | null>(null);
   const [employeeSearch, setEmployeeSearch] = useState('');
   const [selectedEmployeeId, setSelectedEmployeeId] = useState('');
@@ -45,9 +49,10 @@ export function PayrollView({ employees, leaves, shifts }: PayrollViewProps) {
     ? employees.filter(matchesEmployeeSearch).slice(0, 8)
     : [];
   const filteredPayrollList = payrollList.filter((payroll) => {
+    const employee = employees.find((item) => item.id === payroll.employeeId);
+    if (selectedDept !== 'Të gjithë' && employee?.department !== selectedDept) return false;
     if (selectedEmployeeId) return payroll.employeeId === selectedEmployeeId;
     if (!normalizedEmployeeSearch) return true;
-    const employee = employees.find((item) => item.id === payroll.employeeId);
     return employee ? matchesEmployeeSearch(employee) : false;
   });
 
@@ -62,12 +67,12 @@ export function PayrollView({ employees, leaves, shifts }: PayrollViewProps) {
     return { key, label: formatMonthName(key) };
   });
 
-  const totalBaseSalary = payrollList.reduce((acc, curr) => acc + curr.monthlySalary, 0);
-  const totalDeductions = payrollList.reduce((acc, curr) => acc + curr.deductions, 0);
-  const totalBonuses = payrollList.reduce((acc, curr) => acc + curr.bonuses, 0);
-  const totalFinalPayroll = payrollList.reduce((acc, curr) => acc + curr.finalSalary, 0);
-  const employeesWithDeductions = payrollList.filter((p) => p.unpaidLeaveDays > 0).length;
-  const employeesWithExtraHours = payrollList.filter((p) => p.extraHours > 0).length;
+  const totalBaseSalary = filteredPayrollList.reduce((acc, curr) => acc + curr.monthlySalary, 0);
+  const totalDeductions = filteredPayrollList.reduce((acc, curr) => acc + curr.deductions, 0);
+  const totalBonuses = filteredPayrollList.reduce((acc, curr) => acc + curr.bonuses, 0);
+  const totalFinalPayroll = filteredPayrollList.reduce((acc, curr) => acc + curr.finalSalary, 0);
+  const employeesWithDeductions = filteredPayrollList.filter((p) => p.unpaidLeaveDays > 0).length;
+  const employeesWithExtraHours = filteredPayrollList.filter((p) => p.extraHours > 0).length;
 
   const exportPayroll = (format: 'excel' | 'pdf') => {
     const headers = [
@@ -94,7 +99,10 @@ export function PayrollView({ employees, leaves, shifts }: PayrollViewProps) {
       ];
     });
     const exporter = format === 'pdf' ? exportBrandedPdf : exportBrandedExcel;
-    void exporter(`Rafaelo_Resort_Pagat_${selectedMonth}`, headers, rows);
+    const departmentLabel = selectedDept === 'Të gjithë'
+      ? 'Te_Gjitha_Departamentet'
+      : selectedDept.replace(/[^a-zA-Z0-9À-ž]+/g, '_');
+    void exporter(`Rafaelo_Resort_Pagat_${departmentLabel}_${selectedMonth}`, headers, rows);
   };
 
   return (
@@ -113,6 +121,14 @@ export function PayrollView({ employees, leaves, shifts }: PayrollViewProps) {
             <Calendar className="w-4 h-4 text-rose-600" />
             <select value={selectedMonth} onChange={(e) => setSelectedMonth(e.target.value)} className="text-xs font-bold text-slate-800 bg-transparent focus:outline-none cursor-pointer">
               {monthOptions.map((opt) => (<option key={opt.key} value={opt.key}>{opt.label}</option>))}
+            </select>
+          </div>
+
+          <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-xl border border-slate-200 shadow-xs">
+            <Building2 className="w-4 h-4 text-rose-600" />
+            <select value={selectedDept} onChange={(e) => setSelectedDept(e.target.value)} className="text-xs font-bold text-slate-800 bg-transparent focus:outline-none cursor-pointer">
+              <option value="Të gjithë">Të gjitha departamentet</option>
+              {departments.map((d) => (<option key={d} value={d}>{d}</option>))}
             </select>
           </div>
 
@@ -153,7 +169,7 @@ export function PayrollView({ employees, leaves, shifts }: PayrollViewProps) {
         <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
           <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Totali i Pagave Bazë</span>
           <div className="text-xl font-extrabold text-slate-900 mt-1">{formatCurrency(totalBaseSalary)}</div>
-          <p className="text-[11px] text-slate-400 mt-0.5">{employees.length} punonjës</p>
+          <p className="text-[11px] text-slate-400 mt-0.5">{filteredPayrollList.length} punonjës</p>
         </div>
         <div className="bg-white p-4 rounded-2xl border border-amber-200 shadow-xs">
           <span className="text-[11px] font-bold text-amber-800 uppercase tracking-wider">Zbritjet (Leje pa pagesë)</span>
