@@ -107,7 +107,10 @@ export function DashboardView({ employees, attendance, leaves, shifts, departmen
 
           <div className="relative z-10 pt-5 mt-4 border-t border-slate-800/80 flex flex-wrap items-center gap-3">
             <button
-              onClick={() => startTransition(() => autoFillTodayAttendance())}
+              onClick={() => startTransition(async () => {
+                await autoFillTodayAttendance();
+                router.push('/attendance');
+              })}
               className="px-3.5 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-2 cursor-pointer"
             >
               <Zap className="w-3.5 h-3.5" />
