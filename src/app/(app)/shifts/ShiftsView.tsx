@@ -735,7 +735,7 @@ export function ShiftsView({ employees: activeEmployees, shifts, leaves, departm
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <span className="block text-[10px] text-slate-500 mb-1">Nga data</span>
-                    <input type="date" value={selectedDate} readOnly className="w-full min-w-0 p-2.5 bg-slate-100 border border-slate-200 rounded-xl font-semibold text-slate-700" />
+                    <input type="date" value={selectedDate} onChange={(e) => { setSelectedDate(e.target.value); if (bulkTargetEndDate < e.target.value) setBulkTargetEndDate(e.target.value); }} className="w-full min-w-0 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500 font-semibold text-slate-700" />
                   </div>
                   <div>
                     <span className="block text-[10px] text-slate-500 mb-1">Deri më</span>
