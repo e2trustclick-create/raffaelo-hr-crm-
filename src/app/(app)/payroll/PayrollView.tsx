@@ -107,40 +107,12 @@ export function PayrollView({ employees, leaves, shifts, departments: allDepartm
 
   return (
     <div className="p-6 space-y-6 max-w-7xl mx-auto">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-            <span>Pagat e Punonjësve</span>
-            <span className="text-xs px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 font-bold">{formatMonthName(selectedMonth)}</span>
-          </h2>
-          <p className="text-xs text-slate-500">Llogaritja automatike e pagave mujore bazuar në ditët e punës dhe lejet pa pagesë</p>
-        </div>
-
-        <div className="flex items-center gap-3 flex-wrap">
-          <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-xl border border-slate-200 shadow-xs">
-            <Calendar className="w-4 h-4 text-rose-600" />
-            <select value={selectedMonth} onChange={(e) => setSelectedMonth(e.target.value)} className="text-xs font-bold text-slate-800 bg-transparent focus:outline-none cursor-pointer">
-              {monthOptions.map((opt) => (<option key={opt.key} value={opt.key}>{opt.label}</option>))}
-            </select>
-          </div>
-
-          <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-xl border border-slate-200 shadow-xs">
-            <Building2 className="w-4 h-4 text-rose-600" />
-            <select value={selectedDept} onChange={(e) => setSelectedDept(e.target.value)} className="text-xs font-bold text-slate-800 bg-transparent focus:outline-none cursor-pointer">
-              <option value="Të gjithë">Të gjitha departamentet</option>
-              {departments.map((d) => (<option key={d} value={d}>{d}</option>))}
-            </select>
-          </div>
-
-          <button onClick={() => exportPayroll('excel')} className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs transition-all cursor-pointer">
-            <Download className="w-4 h-4" />
-            <span>Excel</span>
-          </button>
-          <button onClick={() => exportPayroll('pdf')} className="flex items-center gap-1.5 px-4 py-2 bg-rose-900 hover:bg-rose-800 text-white rounded-xl text-xs font-bold shadow-xs transition-all cursor-pointer">
-            <Download className="w-4 h-4" />
-            <span>PDF</span>
-          </button>
-        </div>
+      <div>
+        <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+          <span>Pagat e Punonjësve</span>
+          <span className="text-xs px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 font-bold">{formatMonthName(selectedMonth)}</span>
+        </h2>
+        <p className="text-xs text-slate-500">Llogaritja automatike e pagave mujore bazuar në ditët e punës dhe lejet pa pagesë</p>
       </div>
 
       <div className="bg-gradient-to-r from-rose-900 to-indigo-950 rounded-xl px-4 py-3 text-white shadow-sm border border-rose-800">
@@ -194,12 +166,40 @@ export function PayrollView({ employees, leaves, shifts, departments: allDepartm
       </div>
 
       <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
-        <div className="p-4 bg-slate-50/90 border-b border-slate-200 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-          <div>
-            <h3 className="font-bold text-slate-900 text-sm">Përmbledhja Mujore e Pagave ({formatMonthName(selectedMonth)})</h3>
-            <p className="text-xs text-slate-500">Detajet e pagës mujore, ditëve të punuara, lejeve pa pagesë dhe shumës përfundimtare</p>
+        <div className="p-4 bg-slate-50/90 border-b border-slate-200 space-y-3">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+            <div>
+              <h3 className="font-bold text-slate-900 text-sm">Përmbledhja Mujore e Pagave ({formatMonthName(selectedMonth)})</h3>
+              <p className="text-xs text-slate-500">Detajet e pagës mujore, ditëve të punuara, lejeve pa pagesë dhe shumës përfundimtare</p>
+            </div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-xl border border-slate-200 shadow-xs">
+                <Calendar className="w-4 h-4 text-rose-600" />
+                <select value={selectedMonth} onChange={(e) => setSelectedMonth(e.target.value)} className="text-xs font-bold text-slate-800 bg-transparent focus:outline-none cursor-pointer">
+                  {monthOptions.map((opt) => (<option key={opt.key} value={opt.key}>{opt.label}</option>))}
+                </select>
+              </div>
+
+              <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-xl border border-slate-200 shadow-xs">
+                <Building2 className="w-4 h-4 text-rose-600" />
+                <select value={selectedDept} onChange={(e) => setSelectedDept(e.target.value)} className="text-xs font-bold text-slate-800 bg-transparent focus:outline-none cursor-pointer">
+                  <option value="Të gjithë">Të gjitha departamentet</option>
+                  {departments.map((d) => (<option key={d} value={d}>{d}</option>))}
+                </select>
+              </div>
+
+              <button onClick={() => exportPayroll('excel')} className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs transition-all cursor-pointer">
+                <Download className="w-4 h-4" />
+                <span>Excel</span>
+              </button>
+              <button onClick={() => exportPayroll('pdf')} className="flex items-center gap-1.5 px-4 py-2 bg-rose-900 hover:bg-rose-800 text-white rounded-xl text-xs font-bold shadow-xs transition-all cursor-pointer">
+                <Download className="w-4 h-4" />
+                <span>PDF</span>
+              </button>
+            </div>
           </div>
-          <div className="relative w-full lg:w-80">
+
+          <div className="relative w-full lg:w-80 lg:ml-auto">
             <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 focus-within:border-rose-300 focus-within:ring-2 focus-within:ring-rose-500">
               <Search className="w-4 h-4 text-slate-400 shrink-0" />
               <input
