@@ -1,8 +1,9 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
+import { Suspense } from 'react';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { Calendar as CalendarIcon, Menu } from 'lucide-react';
-import { formatAlbanianDateWithDay, getTodayString } from '@/lib/dateUtils';
+import { formatAlbanianDateWithDay, formatMonthName, getTodayString } from '@/lib/dateUtils';
 
 interface HeaderProps {
   onToggleSidebar: () => void;
@@ -43,6 +44,17 @@ const TITLES: Record<string, { title: string; subtitle: string }> = {
   },
 };
 
+function PayrollMonthBadge() {
+  const searchParams = useSearchParams();
+  const month = searchParams.get('month');
+  if (!month) return null;
+  return (
+    <span className="text-xs px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 font-bold shrink-0">
+      {formatMonthName(month)}
+    </span>
+  );
+}
+
 export function Header({ onToggleSidebar }: HeaderProps) {
   const pathname = usePathname();
   const todayStr = getTodayString();
@@ -60,6 +72,11 @@ export function Header({ onToggleSidebar }: HeaderProps) {
         </button>
         <div>
           <h1 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+            {pathname === '/payroll' && (
+              <Suspense fallback={null}>
+                <PayrollMonthBadge />
+              </Suspense>
+            )}
             <span>{current.title}</span>
           </h1>
           <p className="text-[11px] sm:text-xs text-slate-500 font-normal hidden sm:block">

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { Employee, LeaveRequest, PayrollRecord, ShiftSchedule } from '@/lib/types';
 import { getCurrentMonthString, formatMonthName, formatCurrency } from '@/lib/dateUtils';
@@ -29,8 +30,12 @@ interface PayrollViewProps {
 }
 
 export function PayrollView({ employees, leaves, shifts, departments: allDepartments }: PayrollViewProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const departments = [...allDepartments].sort((a, b) => a.localeCompare(b, 'sq'));
-  const [selectedMonth, setSelectedMonth] = useState<string>(() => getCurrentMonthString());
+  const [selectedMonth, setSelectedMonth] = useState<string>(
+    () => searchParams.get('month') || getCurrentMonthString()
+  );
   const [selectedDept, setSelectedDept] = useState<string>('Të gjithë');
   const [selectedSlip, setSelectedSlip] = useState<{ payroll: PayrollRecord; employee: Employee } | null>(null);
   const [employeeSearch, setEmployeeSearch] = useState('');
@@ -62,6 +67,13 @@ export function PayrollView({ employees, leaves, shifts, departments: allDepartm
     const previousTitle = document.title;
     document.title = `Pagat – ${formatMonthName(selectedMonth)} | Rafaelo Resort HR`;
     return () => { document.title = previousTitle; };
+  }, [selectedMonth]);
+
+  useEffect(() => {
+    if (searchParams.get('month') !== selectedMonth) {
+      router.replace(`/payroll?month=${selectedMonth}`, { scroll: false });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedMonth]);
 
   const monthOptions = Array.from({ length: 6 }, (_, i) => {
