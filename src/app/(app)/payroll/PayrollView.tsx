@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Employee, LeaveRequest, PayrollRecord, ShiftSchedule } from '@/lib/types';
 import { getCurrentMonthString, formatMonthName, formatCurrency } from '@/lib/dateUtils';
@@ -58,6 +58,12 @@ export function PayrollView({ employees, leaves, shifts, departments: allDepartm
 
   const { page, setPage, pageItems: pagedPayrollList, totalItems: totalFilteredPayroll, pageSize } = usePagination(filteredPayrollList, 30);
 
+  useEffect(() => {
+    const previousTitle = document.title;
+    document.title = `Pagat – ${formatMonthName(selectedMonth)} | Rafaelo Resort HR`;
+    return () => { document.title = previousTitle; };
+  }, [selectedMonth]);
+
   const monthOptions = Array.from({ length: 6 }, (_, i) => {
     const d = new Date();
     d.setMonth(d.getMonth() - i);
@@ -107,11 +113,6 @@ export function PayrollView({ employees, leaves, shifts, departments: allDepartm
 
   return (
     <div className="p-6 space-y-6 max-w-7xl mx-auto">
-      <div>
-        <span className="inline-block text-xs px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 font-bold">{formatMonthName(selectedMonth)}</span>
-        <p className="text-xs text-slate-500 mt-1.5">Llogaritja automatike e pagave mujore bazuar në ditët e punës dhe lejet pa pagesë</p>
-      </div>
-
       <div className="bg-gradient-to-r from-rose-900 to-indigo-950 rounded-xl px-4 py-3 text-white shadow-sm border border-rose-800">
         <div className="flex items-start gap-2.5">
           <div className="w-7 h-7 rounded-lg bg-rose-500/20 border border-rose-400/30 text-rose-300 flex items-center justify-center shrink-0"><Info className="w-3.5 h-3.5" /></div>
