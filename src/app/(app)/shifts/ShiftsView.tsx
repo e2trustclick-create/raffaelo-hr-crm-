@@ -657,15 +657,15 @@ export function ShiftsView({ employees: activeEmployees, shifts, leaves, departm
 
               <div>
                 <label className="block font-semibold text-slate-700 mb-1">{editingShiftId ? 'Data' : 'Periudha e Orarit'}</label>
-                <div className={`grid ${editingShiftId ? 'grid-cols-1' : 'grid-cols-2'} gap-3`}>
+                <div className={`grid ${editingShiftId ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2'} gap-3`}>
                   <div>
                     {!editingShiftId && <span className="block text-[10px] text-slate-500 mb-1">Nga data</span>}
-                    <input type="date" value={targetDate} onChange={(e) => { setTargetDate(e.target.value); if (targetEndDate < e.target.value) setTargetEndDate(e.target.value); }} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500" />
+                    <input type="date" value={targetDate} onChange={(e) => { setTargetDate(e.target.value); if (targetEndDate < e.target.value) setTargetEndDate(e.target.value); }} className="w-full min-w-0 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500" />
                   </div>
                   {!editingShiftId && (
                     <div>
                       <span className="block text-[10px] text-slate-500 mb-1">Deri më</span>
-                      <input type="date" value={targetEndDate} min={targetDate} onChange={(e) => setTargetEndDate(e.target.value)} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500" />
+                      <input type="date" value={targetEndDate} min={targetDate} onChange={(e) => setTargetEndDate(e.target.value)} className="w-full min-w-0 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500" />
                     </div>
                   )}
                 </div>
@@ -732,14 +732,14 @@ export function ShiftsView({ employees: activeEmployees, shifts, leaves, departm
             <form onSubmit={handleSaveBulk} className="mt-4 space-y-4 text-xs">
               <div>
                 <label className="block font-semibold text-slate-700 mb-1">Periudha e Orarit</label>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <span className="block text-[10px] text-slate-500 mb-1">Nga data</span>
-                    <input type="date" value={selectedDate} readOnly className="w-full p-2.5 bg-slate-100 border border-slate-200 rounded-xl font-semibold text-slate-700" />
+                    <input type="date" value={selectedDate} readOnly className="w-full min-w-0 p-2.5 bg-slate-100 border border-slate-200 rounded-xl font-semibold text-slate-700" />
                   </div>
                   <div>
                     <span className="block text-[10px] text-slate-500 mb-1">Deri më</span>
-                    <input type="date" value={bulkTargetEndDate} min={selectedDate} onChange={(event) => setBulkTargetEndDate(event.target.value)} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500" />
+                    <input type="date" value={bulkTargetEndDate} min={selectedDate} onChange={(event) => setBulkTargetEndDate(event.target.value)} className="w-full min-w-0 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500" />
                   </div>
                 </div>
               </div>

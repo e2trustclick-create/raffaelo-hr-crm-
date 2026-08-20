@@ -154,10 +154,10 @@ export function EmployeeModal({ title, initialData, defaultWorkingDays, onClose,
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block font-semibold text-slate-700 mb-1">Data e Fillimit</label>
-              <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500" />
+              <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="w-full min-w-0 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500" />
             </div>
             <div>
               <label className="block font-semibold text-slate-700 mb-1">Paga Mujore (Lekë)</label>
