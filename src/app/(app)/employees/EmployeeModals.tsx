@@ -210,7 +210,7 @@ export function EmployeeProfileModal({
   const leaveBalance = getEmployeeLeaveBalance(leaves, employee.id, annualLeaveQuota);
   const empLeaves = leaves.filter((l) => l.employeeId === employee.id);
   const daysInCurrentMonth = getDaysInMonth();
-  const dailyRate = Math.round(employee.monthlySalary / daysInCurrentMonth);
+  const dailyRate = Math.round((employee.monthlySalary ?? 0) / daysInCurrentMonth);
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">

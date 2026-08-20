@@ -1,18 +1,19 @@
 import { z } from 'zod';
 
 const dateOnly = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Data duhet të jetë në formatin VVVV-MM-DD');
+const emptyToNull = (v: unknown) => (typeof v === 'string' && v.trim() === '' ? null : v);
 
 export const employeeInputSchema = z.object({
   firstName: z.string().trim().min(1, 'Emri kërkohet').max(80),
   lastName: z.string().trim().min(1, 'Mbiemri kërkohet').max(80),
   nid: z.string().trim().max(20, 'NID shumë i gjatë').optional().nullable(),
-  position: z.string().trim().min(1, 'Pozicioni kërkohet').max(100),
+  position: z.preprocess(emptyToNull, z.string().trim().min(1).max(100).optional().nullable()),
   department: z.string().trim().min(1, 'Departamenti kërkohet').max(100),
-  phone: z.string().trim().min(5, 'Telefoni është shumë i shkurtër').max(30),
-  email: z.string().trim().toLowerCase().email('Email i pavlefshëm').max(180),
-  startDate: dateOnly,
+  phone: z.preprocess(emptyToNull, z.string().trim().min(5, 'Telefoni është shumë i shkurtër').max(30).optional().nullable()),
+  email: z.preprocess(emptyToNull, z.string().trim().toLowerCase().email('Email i pavlefshëm').max(180).optional().nullable()),
+  startDate: z.preprocess(emptyToNull, dateOnly.optional().nullable()),
   status: z.enum(['Aktiv', 'Joaktiv']),
-  monthlySalary: z.coerce.number().int().min(0, 'Paga nuk mund të jetë negative').max(10_000_000),
+  monthlySalary: z.preprocess(emptyToNull, z.coerce.number().int().min(0, 'Paga nuk mund të jetë negative').max(10_000_000).optional().nullable()),
   workingDaysPerMonth: z.coerce.number().int().min(1).max(31),
   avatarColor: z.string().max(30).optional().nullable(),
   notes: z.string().max(2000).optional().nullable(),

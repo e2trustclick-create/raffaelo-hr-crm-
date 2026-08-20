@@ -49,14 +49,14 @@ model Employee {
   firstName           String
   lastName             String
   nid                 String?  @unique
-  position            String
+  position            String?
   department          String
   departmentRecord    DepartmentRecord @relation(fields: [department], references: [name], onUpdate: Cascade, onDelete: Restrict)
-  phone               String
-  email               String         @unique
-  startDate           DateTime       @db.Date
+  phone               String?
+  email               String?        @unique
+  startDate           DateTime?      @db.Date
   status              EmployeeStatus @default(AKTIV)
-  monthlySalary       Int
+  monthlySalary       Int?
   workingDaysPerMonth Int            @default(26)
   avatarColor         String?
   notes               String?

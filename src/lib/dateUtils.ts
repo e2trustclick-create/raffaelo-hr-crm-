@@ -86,7 +86,8 @@ export function calculateHoursBetween(start: string, end: string): number {
   return Number((totalMinutes / 60).toFixed(1));
 }
 
-export function formatCurrency(amount: number): string {
+export function formatCurrency(amount: number | null | undefined): string {
+  if (amount === null || amount === undefined) return '—';
   const rounded = Math.round(amount);
   const grouped = Math.abs(rounded).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
   return (rounded < 0 ? '-' : '') + grouped + ' Lekë';

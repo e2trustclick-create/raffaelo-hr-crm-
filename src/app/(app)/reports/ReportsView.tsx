@@ -77,7 +77,7 @@ export function ReportsView({ employees, attendance, leaves, departments: allDep
       void exporter(`Rafaelo_Raport_Frekuentimi_${selectedMonth}`, headers, rows);
     } else if (activeReportTab === 'employeeHours') {
       const headers = ['Punonjësi', 'Pozicioni', 'Departamenti', 'Ditë Prezent', 'Orë Totale të Punuara', 'Orë të Planifikuara'];
-      const rows = employeeHoursData.map((d) => [`${d.emp.firstName} ${d.emp.lastName}`, d.emp.position, d.emp.department, d.daysPresent, d.totalH, d.standardExpectedHours]);
+      const rows = employeeHoursData.map((d) => [`${d.emp.firstName} ${d.emp.lastName}`, d.emp.position || '', d.emp.department, d.daysPresent, d.totalH, d.standardExpectedHours]);
       void exporter(`Rafaelo_Raport_Oret_Punonjesve_${selectedMonth}`, headers, rows);
     } else if (activeReportTab === 'deptHours') {
       const headers = ['Departamenti', 'Numri i Stafit', 'Orë Totale të Punuara'];

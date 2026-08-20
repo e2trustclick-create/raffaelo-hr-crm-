@@ -50,6 +50,6 @@ export const LEAVE_TYPE_FROM_DB: Record<LeaveType, string> = {
   [LeaveType.PA_PAGESE]: 'Leje pa pagesë',
 };
 
-export function toDateOnlyString(date: Date): string {
-  return date.toISOString().split('T')[0];
+export function toDateOnlyString(date: Date | null): string {
+  return date ? date.toISOString().split('T')[0] : '';
 }

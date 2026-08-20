@@ -66,9 +66,9 @@ export function EmployeesView({ employees, leaves, annualLeaveQuota, defaultWork
   const filteredEmployees = employees.filter((emp) => {
     const matchesSearch =
       `${emp.firstName} ${emp.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      emp.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      emp.phone.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      emp.position.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (emp.email ?? '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (emp.phone ?? '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (emp.position ?? '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       (emp.nid ?? '').toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesDept = selectedDept === null || emp.department === selectedDept;
@@ -134,8 +134,8 @@ export function EmployeesView({ employees, leaves, annualLeaveQuota, defaultWork
     ];
     const daysInCurrentMonth = getDaysInMonth();
     const rows = exportScope.map((e, index) => [
-      index + 1, e.firstName, e.lastName, e.nid || '', e.position, e.department, e.phone, e.email,
-      e.startDate, e.status, e.monthlySalary, daysInCurrentMonth,
+      index + 1, e.firstName, e.lastName, e.nid || '', e.position || '', e.department, e.phone || '', e.email || '',
+      e.startDate, e.status, e.monthlySalary ?? '', daysInCurrentMonth,
     ]);
     const exporter = format === 'pdf' ? exportBrandedPdf : exportBrandedExcel;
     void exporter(`Rafaelo_Resort_Punonjesit_${safeScopeLabel}`, headers, rows);

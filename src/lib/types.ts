@@ -33,13 +33,13 @@ export interface Employee {
   firstName: string;
   lastName: string;
   nid?: string; // Numri i Kartës së Identitetit
-  position: string;
+  position: string | null;
   department: Department;
-  phone: string;
-  email: string;
+  phone: string | null;
+  email: string | null;
   startDate: string;
   status: EmployeeStatus;
-  monthlySalary: number; // in Lekë
+  monthlySalary: number | null; // in Lekë
   workingDaysPerMonth: number; // default 26
   avatarColor?: string;
   notes?: string;

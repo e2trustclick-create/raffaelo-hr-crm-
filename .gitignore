@@ -42,3 +42,6 @@ yarn-error.log*
 next-env.d.ts
 
 /src/generated/prisma
+
+# HR data imports (contains real employee data, must not be public)
+/public/*.xlsx
