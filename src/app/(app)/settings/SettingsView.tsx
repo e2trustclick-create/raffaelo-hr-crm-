@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import type { HRSettings } from '@/lib/types';
-import { updateSettings, createUser, deleteUser, unlockUser } from './actions';
+import { updateSettings, deleteUser, unlockUser } from './actions';
 import {
   Building2,
   Mail,
@@ -12,7 +12,6 @@ import {
   Trash2,
   Lock,
   Unlock,
-  UserPlus,
   History,
   AlertTriangle,
 } from 'lucide-react';
@@ -64,12 +63,6 @@ export function SettingsView({ settings, isAdmin, currentUserId, users, auditLog
   const [hrEmail, setHrEmail] = useState(settings.hrEmail);
   const [savedSuccess, setSavedSuccess] = useState(false);
 
-  const [newUserName, setNewUserName] = useState('');
-  const [newUsername, setNewUsername] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [userFormError, setUserFormError] = useState('');
-  const [userFormSuccess, setUserFormSuccess] = useState(false);
-
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     if (!isAdmin) return;
@@ -78,23 +71,6 @@ export function SettingsView({ settings, isAdmin, currentUserId, users, auditLog
     );
     setSavedSuccess(true);
     setTimeout(() => setSavedSuccess(false), 3000);
-  };
-
-  const handleCreateUser = (e: React.FormEvent) => {
-    e.preventDefault();
-    setUserFormError('');
-    startTransition(async () => {
-      try {
-        await createUser({ name: newUserName, username: newUsername, password: newPassword });
-        setNewUserName('');
-        setNewUsername('');
-        setNewPassword('');
-        setUserFormSuccess(true);
-        setTimeout(() => setUserFormSuccess(false), 3000);
-      } catch (error) {
-        setUserFormError(error instanceof Error ? error.message : 'Krijimi dështoi.');
-      }
-    });
   };
 
   const handleDeleteUser = (id: string) => {
@@ -217,28 +193,6 @@ export function SettingsView({ settings, isAdmin, currentUserId, users, auditLog
                 </div>
               ))}
             </div>
-
-            <form onSubmit={handleCreateUser} className="pt-4 border-t border-slate-100 space-y-3">
-              <div className="flex items-center gap-2">
-                <UserPlus className="w-4 h-4 text-rose-600" />
-                <h4 className="font-bold text-slate-900 text-xs">Shto Llogari të Re</h4>
-              </div>
-              {userFormError && (
-                <p className="text-[11px] font-semibold text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{userFormError}</p>
-              )}
-              {userFormSuccess && (
-                <p className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">Llogaria u krijua me sukses.</p>
-              )}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                <input required type="text" placeholder="Emri i plotë" value={newUserName} onChange={(e) => setNewUserName(e.target.value)} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500 focus:bg-white" />
-                <input required type="text" placeholder="Përdoruesi (username)" value={newUsername} onChange={(e) => setNewUsername(e.target.value)} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500 focus:bg-white" />
-                <input required type="password" placeholder="Fjalëkalimi (min. 8 karaktere)" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500 focus:bg-white sm:col-span-2" />
-              </div>
-              <button type="submit" className="flex items-center gap-2 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold text-xs transition-all cursor-pointer">
-                <UserPlus className="w-3.5 h-3.5" />
-                <span>Krijo Llogarinë</span>
-              </button>
-            </form>
           </div>
 
           <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs space-y-4">
