@@ -2,9 +2,17 @@ import { prisma } from '@/lib/prisma';
 import { auth } from '@/lib/auth';
 import { SettingsView } from './SettingsView';
 
+const AUDIT_LOG_RETENTION_DAYS = 14;
+
 export default async function SettingsPage() {
   const session = await auth();
   const isAdmin = session?.user?.role === 'ADMIN';
+
+  const retentionCutoff = new Date(Date.now() - AUDIT_LOG_RETENTION_DAYS * 24 * 60 * 60 * 1000);
+
+  if (isAdmin) {
+    await prisma.auditLog.deleteMany({ where: { createdAt: { lt: retentionCutoff } } });
+  }
 
   const [settings, users, auditLog] = await Promise.all([
     prisma.hRSettings.findUniqueOrThrow({ where: { id: 'singleton' } }),
@@ -15,7 +23,7 @@ export default async function SettingsPage() {
         })
       : Promise.resolve([]),
     isAdmin
-      ? prisma.auditLog.findMany({ orderBy: { createdAt: 'desc' }, take: 50 })
+      ? prisma.auditLog.findMany({ where: { createdAt: { gte: retentionCutoff } }, orderBy: { createdAt: 'desc' } })
       : Promise.resolve([]),
   ]);
 

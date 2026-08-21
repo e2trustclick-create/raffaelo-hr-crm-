@@ -14,6 +14,8 @@ import {
   Unlock,
   History,
   AlertTriangle,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 
 type GeneralSettings = Pick<HRSettings, 'resortName' | 'resortLocation' | 'hrEmail'>;
@@ -62,6 +64,14 @@ export function SettingsView({ settings, isAdmin, currentUserId, users, auditLog
   const [resortLocation, setResortLocation] = useState(settings.resortLocation);
   const [hrEmail, setHrEmail] = useState(settings.hrEmail);
   const [savedSuccess, setSavedSuccess] = useState(false);
+
+  const AUDIT_LOG_PAGE_SIZE = 10;
+  const [auditPage, setAuditPage] = useState(0);
+  const auditTotalPages = Math.max(1, Math.ceil(auditLog.length / AUDIT_LOG_PAGE_SIZE));
+  const paginatedAuditLog = auditLog.slice(
+    auditPage * AUDIT_LOG_PAGE_SIZE,
+    auditPage * AUDIT_LOG_PAGE_SIZE + AUDIT_LOG_PAGE_SIZE
+  );
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
@@ -191,28 +201,56 @@ export function SettingsView({ settings, isAdmin, currentUserId, users, auditLog
           </div>
 
           <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs space-y-4">
-            <div className="flex items-center gap-2.5 pb-3 border-b border-slate-100">
-              <History className="w-5 h-5 text-rose-600" />
-              <h3 className="font-bold text-slate-900 text-sm">Aktiviteti i Fundit</h3>
+            <div className="flex items-center justify-between gap-2.5 pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2.5">
+                <History className="w-5 h-5 text-rose-600" />
+                <h3 className="font-bold text-slate-900 text-sm">Aktiviteti i Fundit</h3>
+              </div>
+              <span className="text-[10px] font-semibold text-slate-400">Ruhet për 2 javë</span>
             </div>
             {auditLog.length === 0 ? (
               <p className="text-xs text-slate-400">Ende s&apos;ka aktivitet të regjistruar.</p>
             ) : (
-              <div className="space-y-1.5 max-h-96 overflow-y-auto">
-                {auditLog.map((entry) => (
-                  <div key={entry.id} className="flex items-start justify-between gap-3 py-2 border-b border-slate-50 text-[11px]">
-                    <div className="min-w-0">
-                      <span className="font-bold text-slate-800">{entry.actorName}</span>
-                      <span className="text-slate-500"> {ACTION_LABELS[entry.action] ?? entry.action.toLowerCase()} </span>
-                      <span className="font-semibold text-slate-700">{entry.entityType}</span>
-                      {entry.detail && <span className="text-slate-400"> — {entry.detail}</span>}
+              <>
+                <div className="space-y-1.5">
+                  {paginatedAuditLog.map((entry) => (
+                    <div key={entry.id} className="flex items-start justify-between gap-3 py-2 border-b border-slate-50 text-[11px]">
+                      <div className="min-w-0">
+                        <span className="font-bold text-slate-800">{entry.actorName}</span>
+                        <span className="text-slate-500"> {ACTION_LABELS[entry.action] ?? entry.action.toLowerCase()} </span>
+                        <span className="font-semibold text-slate-700">{entry.entityType}</span>
+                        {entry.detail && <span className="text-slate-400"> — {entry.detail}</span>}
+                      </div>
+                      <span className="text-slate-400 shrink-0 whitespace-nowrap">
+                        {new Date(entry.createdAt).toLocaleString('sq-AL')}
+                      </span>
                     </div>
-                    <span className="text-slate-400 shrink-0 whitespace-nowrap">
-                      {new Date(entry.createdAt).toLocaleString('sq-AL')}
+                  ))}
+                </div>
+                {auditTotalPages > 1 && (
+                  <div className="flex items-center justify-between pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setAuditPage((p) => Math.max(0, p - 1))}
+                      disabled={auditPage === 0}
+                      className="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </button>
+                    <span className="text-[11px] font-semibold text-slate-500">
+                      Faqja {auditPage + 1} nga {auditTotalPages}
                     </span>
+                    <button
+                      type="button"
+                      onClick={() => setAuditPage((p) => Math.min(auditTotalPages - 1, p + 1))}
+                      disabled={auditPage >= auditTotalPages - 1}
+                      className="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
                   </div>
-                ))}
-              </div>
+                )}
+              </>
             )}
           </div>
         </>
