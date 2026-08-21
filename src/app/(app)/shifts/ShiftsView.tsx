@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import { Employee, ShiftSchedule, Department, ShiftType, LeaveRequest } from '@/lib/types';
 import { getTodayString, formatAlbanianDateWithDay, ALBANIAN_DAYS_SHORT, ALBANIAN_MONTHS, calculateHoursBetween } from '@/lib/dateUtils';
 import { assignShift, assignShiftForDateRange, bulkAssignShiftForDate } from './actions';
@@ -35,6 +36,7 @@ function toLocalDateString(date: Date) {
 }
 
 export function ShiftsView({ employees: activeEmployees, shifts, leaves, departments: allDepartments }: ShiftsViewProps) {
+  const router = useRouter();
   const [, startTransition] = useTransition();
 
   const [selectedDate, setSelectedDate] = useState<string>(getTodayString());
@@ -190,24 +192,29 @@ export function ShiftsView({ employees: activeEmployees, shifts, leaves, departm
   const handleSaveShift = (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedEmployeeId) return;
-    startTransition(() => editingShiftId
-      ? assignShift(selectedEmployeeId, targetDate, shiftType, startTime, endTime, undefined, isExtra, editingShiftId)
-      : assignShiftForDateRange(selectedEmployeeId, targetDate, targetEndDate, shiftType, startTime, endTime)
-    );
+    startTransition(async () => {
+      await (editingShiftId
+        ? assignShift(selectedEmployeeId, targetDate, shiftType, startTime, endTime, undefined, isExtra, editingShiftId)
+        : assignShiftForDateRange(selectedEmployeeId, targetDate, targetEndDate, shiftType, startTime, endTime));
+      router.refresh();
+    });
     setIsAssignModalOpen(false);
   };
 
   const handleSaveBulk = (e: React.FormEvent) => {
     e.preventDefault();
     if (bulkEmployeeIds.length === 0) return;
-    startTransition(() => bulkAssignShiftForDate(
-      selectedDate,
-      bulkTargetEndDate,
-      bulkShiftType,
-      bulkShiftType === 'Pushim' ? '' : bulkStartTime,
-      bulkShiftType === 'Pushim' ? '' : bulkEndTime,
-      bulkEmployeeIds
-    ));
+    startTransition(async () => {
+      await bulkAssignShiftForDate(
+        selectedDate,
+        bulkTargetEndDate,
+        bulkShiftType,
+        bulkShiftType === 'Pushim' ? '' : bulkStartTime,
+        bulkShiftType === 'Pushim' ? '' : bulkEndTime,
+        bulkEmployeeIds
+      );
+      router.refresh();
+    });
     setIsBulkModalOpen(false);
   };
 

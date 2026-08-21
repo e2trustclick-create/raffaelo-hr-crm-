@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import type { HRSettings } from '@/lib/types';
 import { updateSettings, deleteUser, unlockUser } from './actions';
 import {
@@ -58,6 +59,7 @@ const ACTION_LABELS: Record<string, string> = {
 };
 
 export function SettingsView({ settings, isAdmin, currentUserId, users, auditLog }: SettingsViewProps) {
+  const router = useRouter();
   const [, startTransition] = useTransition();
 
   const [resortName, setResortName] = useState(settings.resortName);
@@ -76,20 +78,27 @@ export function SettingsView({ settings, isAdmin, currentUserId, users, auditLog
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     if (!isAdmin) return;
-    startTransition(() =>
-      updateSettings({ resortName, resortLocation, hrEmail })
-    );
+    startTransition(async () => {
+      await updateSettings({ resortName, resortLocation, hrEmail });
+      router.refresh();
+    });
     setSavedSuccess(true);
     setTimeout(() => setSavedSuccess(false), 3000);
   };
 
   const handleDeleteUser = (id: string) => {
     if (!confirm('Të fshihet kjo llogari?')) return;
-    startTransition(() => deleteUser(id));
+    startTransition(async () => {
+      await deleteUser(id);
+      router.refresh();
+    });
   };
 
   const handleUnlock = (id: string) => {
-    startTransition(() => unlockUser(id));
+    startTransition(async () => {
+      await unlockUser(id);
+      router.refresh();
+    });
   };
 
   return (

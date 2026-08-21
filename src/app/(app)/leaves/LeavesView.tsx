@@ -209,7 +209,10 @@ export function LeavesView({ employees, leaves, initialOpenAdd }: LeavesViewProp
                           <button onClick={() => setEditingLeave(req)} className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer" title="Ndrysho lejen">
                             <Pencil className="w-3.5 h-3.5" />
                           </button>
-                          <button onClick={() => startTransition(() => deleteLeaveRequest(req.id))} className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer" title="Fshi regjistrimin">
+                          <button onClick={() => startTransition(async () => {
+                            await deleteLeaveRequest(req.id);
+                            router.refresh();
+                          })} className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer" title="Fshi regjistrimin">
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         </div>
@@ -230,7 +233,10 @@ export function LeavesView({ employees, leaves, initialOpenAdd }: LeavesViewProp
           employees={activeEmployees}
           onClose={closeAddModal}
           onSave={(data) => {
-            startTransition(() => addLeaveRequest(data));
+            startTransition(async () => {
+              await addLeaveRequest(data);
+              router.refresh();
+            });
             closeAddModal();
           }}
         />
@@ -241,7 +247,10 @@ export function LeavesView({ employees, leaves, initialOpenAdd }: LeavesViewProp
           initialData={editingLeave}
           onClose={() => setEditingLeave(null)}
           onSave={(data) => {
-            startTransition(() => updateLeaveRequest(editingLeave.id, data));
+            startTransition(async () => {
+              await updateLeaveRequest(editingLeave.id, data);
+              router.refresh();
+            });
             setEditingLeave(null);
           }}
         />

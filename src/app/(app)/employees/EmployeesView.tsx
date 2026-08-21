@@ -390,7 +390,10 @@ export function EmployeesView({ employees, leaves, annualLeaveQuota, defaultWork
                     <td className="py-3 px-4 font-semibold text-slate-900">{formatCurrency(emp.monthlySalary)}</td>
                     <td className="py-3 px-4">
                       <button
-                        onClick={() => startTransition(() => toggleEmployeeStatus(emp.id))}
+                        onClick={() => startTransition(async () => {
+                          await toggleEmployeeStatus(emp.id);
+                          router.refresh();
+                        })}
                         className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold transition-colors cursor-pointer ${
                           emp.status === 'Aktiv'
                             ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200'
@@ -419,7 +422,10 @@ export function EmployeesView({ employees, leaves, annualLeaveQuota, defaultWork
                           <Edit2 className="w-4 h-4" />
                         </button>
                         <button
-                          onClick={() => startTransition(() => toggleEmployeeStatus(emp.id))}
+                          onClick={() => startTransition(async () => {
+                            await toggleEmployeeStatus(emp.id);
+                            router.refresh();
+                          })}
                           className="p-1.5 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
                           title={emp.status === 'Aktiv' ? 'Çaktivizo punonjësin' : 'Aktivizo punonjësin'}
                         >
@@ -456,7 +462,10 @@ export function EmployeesView({ employees, leaves, annualLeaveQuota, defaultWork
           departments={departments.map((department) => department.name)}
           onClose={closeAddModal}
           onSave={(data) => {
-            startTransition(() => createEmployee(data));
+            startTransition(async () => {
+              await createEmployee(data);
+              router.refresh();
+            });
             closeAddModal();
           }}
         />
@@ -470,7 +479,10 @@ export function EmployeesView({ employees, leaves, annualLeaveQuota, defaultWork
           departments={departments.map((department) => department.name)}
           onClose={() => setEditingEmployee(null)}
           onSave={(data) => {
-            startTransition(() => updateEmployee(editingEmployee.id, data));
+            startTransition(async () => {
+              await updateEmployee(editingEmployee.id, data);
+              router.refresh();
+            });
             setEditingEmployee(null);
           }}
         />
@@ -506,7 +518,10 @@ export function EmployeesView({ employees, leaves, annualLeaveQuota, defaultWork
                 onClick={() => {
                   const employeeId = deletingEmployee.id;
                   setDeletingEmployee(null);
-                  startTransition(() => deleteEmployee(employeeId));
+                  startTransition(async () => {
+                    await deleteEmployee(employeeId);
+                    router.refresh();
+                  });
                 }}
                 className="px-4 py-2 rounded-xl bg-red-700 hover:bg-red-800 text-sm font-semibold text-white cursor-pointer"
               >
@@ -524,9 +539,18 @@ export function EmployeesView({ employees, leaves, annualLeaveQuota, defaultWork
             employeeCount: employees.filter((employee) => employee.department === department.name).length,
           }))}
           onClose={() => setIsDepartmentManagerOpen(false)}
-          onCreate={(name) => startTransition(() => createDepartment(name))}
-          onRename={(id, name) => startTransition(() => renameDepartment(id, name))}
-          onDelete={(id) => startTransition(() => deleteDepartment(id))}
+          onCreate={(name) => startTransition(async () => {
+            await createDepartment(name);
+            router.refresh();
+          })}
+          onRename={(id, name) => startTransition(async () => {
+            await renameDepartment(id, name);
+            router.refresh();
+          })}
+          onDelete={(id) => startTransition(async () => {
+            await deleteDepartment(id);
+            router.refresh();
+          })}
         />
       )}
     </div>

@@ -401,8 +401,14 @@ export function DashboardView({ employees, attendance, leaves, shifts, departmen
                       </td>
                       <td className="py-2.5 px-3 text-right">
                         <div className="flex items-center justify-end gap-1.5">
-                          <button onClick={() => startTransition(() => quickCheckIn(emp.id))} className="px-2 py-1 bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-700 rounded-lg text-[11px] font-bold transition-colors cursor-pointer" title="Regjistro hyrjen">Hyrje</button>
-                          <button onClick={() => startTransition(() => quickCheckOut(emp.id))} className="px-2 py-1 bg-slate-100 hover:bg-rose-50 hover:text-rose-700 text-slate-700 rounded-lg text-[11px] font-bold transition-colors cursor-pointer" title="Regjistro daljen">Dalje</button>
+                          <button onClick={() => startTransition(async () => {
+                            await quickCheckIn(emp.id);
+                            router.refresh();
+                          })} className="px-2 py-1 bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-700 rounded-lg text-[11px] font-bold transition-colors cursor-pointer" title="Regjistro hyrjen">Hyrje</button>
+                          <button onClick={() => startTransition(async () => {
+                            await quickCheckOut(emp.id);
+                            router.refresh();
+                          })} className="px-2 py-1 bg-slate-100 hover:bg-rose-50 hover:text-rose-700 text-slate-700 rounded-lg text-[11px] font-bold transition-colors cursor-pointer" title="Regjistro daljen">Dalje</button>
                         </div>
                       </td>
                     </tr>
