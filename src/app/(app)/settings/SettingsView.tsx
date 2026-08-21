@@ -84,11 +84,6 @@ export function SettingsView({ settings, isAdmin, currentUserId, users, auditLog
 
   return (
     <div className="p-6 space-y-6 max-w-4xl mx-auto">
-      <div>
-        <h2 className="text-lg font-bold text-slate-900">Cilësimet e Sistemit HR</h2>
-        <p className="text-xs text-slate-500">Konfiguroni të dhënat e Rafaelo Resort dhe kontaktin e administratorit HR</p>
-      </div>
-
       {savedSuccess && (
         <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
